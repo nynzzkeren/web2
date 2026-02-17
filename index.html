@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KyoUto - Organic Design</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Anime.js (buat animasi lebih halus) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            background: linear-gradient(135deg, rgba(110, 99, 99, 0.726) 0%, rgb(56, 53, 53) 50%);
+            overflow: hidden;
+        }
+
+        /* ORGANIC BACKGROUND SHAPES */
+        .blob {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: linear-gradient(180deg, black, black);
+            border-radius: 62% 38% 42% 58% / 37% 53% 47% 63%;
+            filter: blur(40px);
+            animation: blobMove 20s infinite ease-in-out;
+            z-index: 0;
+        }
+
+        .blob1 {
+            top: -200px;
+            left: -200px;
+            background: linear-gradient(180deg, black, black);
+            animation-duration: 25s;
+        }
+
+        .blob2 {
+            bottom: -200px;
+            right: -200px;
+            width: 600px;
+            height: 600px;
+            background: linear-gradient(180deg, white, white);
+            animation-duration: 30s;
+            animation-delay: -5s;
+        }
+
+        .blob3 {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, black, black);
+            filter: blur(60px);
+            animation: blobPulse 15s infinite;
+        }
+
+        @keyframes blobMove {
+            0%, 100% { border-radius: 62% 38% 42% 58% / 37% 53% 47% 63%; transform: rotate(0deg) scale(1); }
+            33% { border-radius: 42% 58% 52% 48% / 47% 43% 57% 53%; transform: rotate(120deg) scale(1.1); }
+            66% { border-radius: 72% 28% 32% 68% / 27% 73% 27% 73%; transform: rotate(240deg) scale(0.9); }
+        }
+
+        @keyframes blobPulse {
+            0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.2); }
+        }
+
+        /* MAIN CONTAINER - ORGANIC SHAPE */
+        .container {
+            width: 100%;
+            max-width: 550px;
+            padding: 50px 40px;
+            background: black;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter:black;
+            border-radius: 61% 39% 52% 48% / 37% 47% 53% 63%;
+            border: 2px solid white;
+            box-shadow: 0 25px 50px -12px white;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            animation: containerFloat 6s infinite ease-in-out;
+            transition: border-radius 0.5s;
+        }
+
+        .container:hover {
+            border-radius: 55% 45% 48% 52% / 42% 43% 57% 58%;
+        }
+
+        @keyframes containerFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            33% { transform: translateY(-10px) rotate(1deg); }
+            66% { transform: translateY(5px) rotate(-1deg); }
+        }
+
+        /* PROFILE PICTURE - LIQUID SHAPE */
+        .profile-pic {
+            width: 140px;
+            height: 140px;
+            margin: 0 auto 25px;
+            border-radius: 44% 56% 58% 42% / 38% 48% 52% 62%;
+            border: 4px solid white;
+            overflow: hidden;
+            animation: liquidShape 8s infinite ease-in-out;
+            transition: all 0.5s;
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.4);
+        }
+
+        .profile-pic:hover {
+            border-radius: 56% 44% 42% 58% / 52% 42% 58% 48%;
+            border-color: white;
+            transform: scale(1.05);
+        }
+
+        @keyframes liquidShape {
+            0%, 100% { border-radius: 44% 56% 58% 42% / 38% 48% 52% 62%; }
+            25% { border-radius: 56% 44% 42% 58% / 52% 42% 58% 48%; }
+            50% { border-radius: 48% 52% 38% 62% / 42% 58% 42% 58%; }
+            75% { border-radius: 62% 38% 52% 48% / 58% 42% 58% 42%; }
+        }
+
+        .profile-pic img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile h1 {
+          color: white;
+            font-size: 42px;
+            font-weight: 800;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 10px rgb(182, 182, 182);
+            letter-spacing: -1px;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, black 0%, white 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: inline-block;
+        }
+
+        .profile .title {
+            color: linear-gradient(135deg, white 10%, white 1%);
+            font-size: 16px;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            animation: titleGlow 3s infinite;
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { text-shadow: 0 0 10px rgb(245, 245, 245); }
+            50% { text-shadow: 0 0 20px white; }
+        }
+
+        .profile .bio {
+            color: black;
+            font-size: 14px;
+            margin-bottom: 30px;
+            padding: 15px 25px;
+            background: white;
+            border-radius: 100px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgb(0, 0, 0);
+            line-height: 1.6;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bio::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shine 6s infinite;
+        }
+
+        @keyframes shine {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* MUSIC PLAYER - LIQUID */
+        .music-player {
+            background:white;
+            backdrop-filter: blur(10px);
+            border-radius: 73% 27% 56% 44% / 43% 59% 41% 57%;
+            padding: 15px 25px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid black;
+            animation: musicFloat 5s infinite;
+        }
+
+        @keyframes musicFloat {
+            0%, 100% { border-radius: 73% 27% 56% 44% / 43% 59% 41% 57%; }
+            50% { border-radius: 43% 57% 36% 64% / 57% 36% 64% 43%; }
+        }
+
+        .music-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: black;
+        }
+
+        .music-info i {
+            font-size: 24px;
+            color: black;
+            animation: spin 4s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .music-controls button {
+            background: white;
+            border: 2px solid black;
+            width: 45px;
+            height: 45px;
+            border-radius: 41% 59% 34% 66% / 59% 34% 66% 41%;
+            cursor: pointer;
+            font-size: 18px;
+            color: black;
+            transition: all 0.3s;
+        }
+
+        .music-controls button:hover {
+            background: white;
+            color: black;
+            transform: scale(1.1) rotate(10deg);
+            border-color: black;
+        }
+
+        /* SOCIAL ICONS - ORGANIC */
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .social-icon {
+            width: 55px;
+            height: 55px;
+            background: white;
+            backdrop-filter: blur(10px);
+            border: 2px solid black;
+            border-radius: 41% 59% 34% 66% / 59% 34% 66% 41%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: black;
+            text-decoration: none;
+            font-size: 24px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: iconShape 6s infinite;
+        }
+
+        @keyframes iconShape {
+            0%, 100% { border-radius: 41% 59% 34% 66% / 59% 34% 66% 41%; }
+            33% { border-radius: 66% 34% 59% 41% / 34% 66% 34% 66%; }
+            66% { border-radius: 34% 66% 41% 59% / 66% 34% 66% 34%; }
+        }
+
+        .social-icon:hover {
+            background: #ffffff;
+            color: black;
+            transform: translateY(-5px) scale(1.1) rotate(5deg);
+            border-color: white;
+            box-shadow: 0 15px 30px rgb(253, 253, 253);
+        }
+
+        /* MENU BUTTONS - SUPER ORGANIC */
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .menu-item {
+            background: rgb(255, 255, 255);
+            backdrop-filter: blur(10px);
+            color: black;
+            text-decoration: none;
+            padding: 18px 25px;
+            border-radius: 57% 43% 63% 37% / 43% 52% 48% 57%;
+            border: 2px solid rgb(0, 0, 0);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            position: relative;
+            overflow: hidden;
+            animation: menuShape 10s infinite;
+        }
+
+        @keyframes menuShape {
+            0%, 100% { border-radius: 57% 43% 63% 37% / 43% 52% 48% 57%; }
+            25% { border-radius: 43% 57% 37% 63% / 52% 43% 57% 48%; }
+            50% { border-radius: 63% 37% 43% 57% / 37% 63% 37% 63%; }
+            75% { border-radius: 37% 63% 57% 43% / 63% 37% 63% 37%; }
+        }
+
+        .menu-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .menu-item:hover {
+            background: #ffffff;
+            color: black;
+            border-color: white;
+            transform: translateX(10px) scale(1.02);
+            border-radius: 43% 57% 37% 63% / 57% 43% 57% 43%;
+            box-shadow: 0 20px 40px rgba(255, 255, 255, 0.3);
+        }
+
+        .menu-item:hover::before {
+            left: 100%;
+        }
+
+        .menu-item i:first-child {
+            font-size: 22px;
+            transition: transform 0.3s;
+        }
+
+        .menu-item:hover i:first-child {
+            transform: rotate(10deg) scale(1.2);
+        }
+
+        .menu-item span {
+            flex: 1;
+            text-align: left;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        /* COPYRIGHT */
+        .copyright {
+            color: rgba(255,255,255,0.7);
+            font-size: 13px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid rgba(255,255,255,0.1);
+            border-radius: 50%;
+            position: relative;
+        }
+
+        /* NOTIFICATION CUSTOM */
+        .notification-container {
+            position: fixed;
+            top: 30px;
+            left: 46%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 90%;
+            gap: 10px;
+            pointer-events: none;
+        }
+
+        .notification {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            color: white;
+            padding: 18px 25px;
+            border-radius: 51% 49% 42% 58% / 48% 43% 57% 52%;
+            border: 2px solid rgba(255,255,255,0.2);
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transform: translateX(100%) rotate(5deg);
+            animation: notificationSlide 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            min-width: 280px;
+        }
+
+        @keyframes notificationSlide {
+            to { transform: translateX(0) rotate(0deg); }
+        }
+
+        .notification.success {
+            background: linear-gradient(135deg, rgba(34, 34, 34, 0.938), rgb(250, 250, 250));
+            border-color: #000000;
+        }
+
+        .notification i {
+            font-size: 28px;
+            animation: iconPop 0.5s;
+        }
+
+        @keyframes iconPop {
+            0% { transform: scale(0); }
+            80% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .notification .message {
+            flex: 1;
+            line-height: 1.4;
+        }
+
+        .notification .progress-ring {
+            width: 4px;
+            height: 30px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .notification .progress-ring::after {
+            content: '';
+            display: block;
+            width: 100%;
+            height: 100%;
+            background:white;
+            animation: progressShrink 3s linear forwards;
+        }
+
+        @keyframes progressShrink {
+            from { height: 100%; }
+            to { height: 0%; }
+        }
+
+        /* RIPPLE EFFECT */
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            transform: scale(0);
+            animation: ripple-animation 0.6s ease-out;
+            pointer-events: none;
+        }
+
+        @keyframes ripple-animation {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ORGANIC BACKGROUND BLOBS -->
+    <div class="blob blob1"></div>
+    <div class="blob blob2"></div>
+    <div class="blob blob3"></div>
+
+    <!-- NOTIFICATION CONTAINER -->
+    <div class="notification-container" id="notificationContainer"></div>
+
+    <div class="container">
+        <!-- PROFILE PICTURE -->
+        <div class="profile-pic">
+            <img src="https://cdn.discordapp.com/attachments/1468557593411715126/1472862321356308544/eae57a4d4eab40ad5b6ec338b6d58e39.gif?ex=6994c62d&is=699374ad&hm=7774119955dc90298539c52900097db11e1479309fc1d24a0b866cc812b861c1" alt="KyoUto">
+        </div>
+
+        <div class="profile">
+            <h1>
+                <span class="gradient-text">KyoUto</span>
+            </h1>
+            <div class="title">
+                <i class="fas fa-code"></i> Web Developer <i class="fas fa-code"></i>
+            </div>
+            <div class="bio">
+                <i class="fas fa-map-pin"></i> Belajar coding dari dasar sampai jago, apapun halangannya bismilah aja dulu <i class="fas fa-map-pin"></i>
+            </div>
+        </div>
+
+        <!-- MUSIC PLAYER -->
+        <div class="music-player">
+            <div class="music-info">
+                <i class="fas fa-music"></i>
+                <span id="songTitle">My Favorite Song</span>
+            </div>
+            <div class="music-controls">
+                <audio id="bgMusic" loop>
+                    <source src="https://files.catbox.moe/0yog22.mp3" type="audio/mp3">
+                </audio>
+                <button id="playPauseBtn">
+                    <i class="fas fa-play"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- SOCIAL ICONS -->
+        <div class="social-icons">
+            <a href="https://discord.com/users/1411989784569708555" class="social-icon"><i class="fab fa-discord"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-tiktok"></i></a>
+            <a href="https://github.com/nynzzkeren" class="social-icon"><i class="fab fa-github"></i></a>
+        </div>
+
+        <!-- MENU UTAMA -->
+        <div class="menu">
+            <a href="https://chat.whatsapp.com/GKsGFM0bNcbF4EwsenKIYB" class="menu-item">
+                <i class="fab fa-whatsapp"></i>
+                <span>WhatsApp | Grup</span>
+                <i class="fas fa-chevron-right"></i>
+            </a>
+            <a href="https://discord.gg/4DCaAXMp" class="menu-item">
+                <i class="fas fa-code"></i>
+                <span>Developer | Script</span>
+                <i class="fas fa-chevron-right"></i>
+            </a>
+            <a href="https://github.com/nynzzkeren" class="menu-item">
+                <i class="fab fa-github"></i>
+                <span>Portfolio | GitHub</span>
+                <i class="fas fa-chevron-right"></i>
+            </a>
+            <a href="#" class="menu-item copy-btn" data-copy="prem54wild">
+                <img src="https://cdn.discordapp.com/attachments/1468557593411715126/1473024924921626667/CMWXhb-N8IgDEAE.png?ex=6994b4dd&is=6993635d&hm=950b04d30936dfda74f6aca5b856f4ef3f4ef7d8d49b1e196d50d58b58d08452" alt="Discord" style="width: 30px; height: 30px;">
+                <span>Roblox | Account</span>
+                <i class="fas fa-chevron-right"></i>
+            </a>
+            <a href="https://hooh.vercel.app/" class="menu-item">
+                <i class="fas fa-globe"></i>
+                <span>My First Web</span>
+                <i class="fas fa-chevron-right"></i>
+            </a>
+        </div>
+
+        <div class="copyright">
+            Inspiration @guns.lol | Created by Nynzz
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script>
+        // MUSIC PLAYER
+        const audio = document.getElementById('bgMusic');
+        const playBtn = document.getElementById('playPauseBtn');
+
+        playBtn.addEventListener('click', function() {
+            if (audio.paused) {
+                audio.play();
+                playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                playBtn.style.animation = 'pulse 1s infinite';
+            } else {
+                audio.pause();
+                playBtn.innerHTML = '<i class="fas fa-play"></i>';
+                playBtn.style.animation = 'none';
+            }
+        });
+
+        audio.addEventListener('ended', function() {
+            playBtn.innerHTML = '<i class="fas fa-play"></i>';
+            playBtn.style.animation = 'none';
+        });
+
+        // NOTIFICATION FUNCTION (ORGANIC + ANIMATED)
+        function showNotification(message, type = 'success') {
+            const container = document.getElementById('notificationContainer');
+            
+            const notif = document.createElement('div');
+            notif.className = `notification ${type}`;
+            
+            const icon = type === 'success' ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-exclamation';
+            
+            notif.innerHTML = `
+                <i class="${icon}"></i>
+                <span class="message">${message}</span>
+                <div class="progress-ring"></div>
+            `;
+            
+            container.appendChild(notif);
+            
+            // Trigger ripple effect
+            createRipple(notif);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notif.style.animation = 'notificationSlide 0.6s reverse forwards';
+                setTimeout(() => notif.remove(), 600);
+            }, 3000);
+        }
+
+        // RIPPLE EFFECT
+        function createRipple(element) {
+            const ripple = document.createElement('span');
+            ripple.classList.add('ripple');
+            element.appendChild(ripple);
+            
+            const x = element.clientWidth / 2;
+            const y = element.clientHeight / 2;
+            
+            ripple.style.left = x + 'px';
+            ripple.style.top = y + 'px';
+            
+            setTimeout(() => ripple.remove(), 600);
+        }
+
+        // COPY FUNCTION WITH ANIMATIONS
+        document.querySelectorAll('.copy-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const text = this.getAttribute('data-copy');
+                
+                // RIPPLE EFFECT ON BUTTON
+                createRipple(this);
+                
+                // BUTTON CLICK ANIMATION
+                this.style.transform = 'scale(0.95) rotate(-2deg)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 200);
+                
+                navigator.clipboard.writeText(text).then(() => {
+                    // ANIMATED NOTIFICATION
+                    showNotification(`✨ "${text}" copied!`, 'success');
+                    
+                    // BUTTON SUCCESS EFFECT
+                    this.style.background = '#00ff88';
+                    this.style.color = 'black';
+                    setTimeout(() => {
+                        this.style.background = '';
+                        this.style.color = '';
+                    }, 500);
+                    
+                }).catch(err => {
+                    showNotification('❌ Failed to copy', 'error');
+                });
+            });
+        });
+
+        // ADD HOVER ANIMATIONS WITH ANIME.JS
+        document.querySelectorAll('.menu-item, .social-icon').forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                anime({
+                    targets: this,
+                    scale: 1.05,
+                    rotate: '2deg',
+                    duration: 400,
+                    easing: 'easeOutElastic(1, .5)'
+                });
+            });
+            
+            item.addEventListener('mouseleave', function() {
+                anime({
+                    targets: this,
+                    scale: 1,
+                    rotate: '0deg',
+                    duration: 400,
+                    easing: 'easeOutElastic(1, .5)'
+                });
+            });
+        });
+
+        // BACKGROUND BLOB ANIMATIONS
+        anime({
+            targets: '.blob1',
+            translateX: ['-200px', '100px'],
+            translateY: ['-200px', '100px'],
+            rotate: [0, 360],
+            duration: 20000,
+            loop: true,
+            easing: 'easeInOutSine'
+        });
+
+        anime({
+            targets: '.blob2',
+            translateX: ['200px', '-100px'],
+            translateY: ['200px', '-100px'],
+            rotate: [360, 0],
+            duration: 25000,
+            loop: true,
+            easing: 'easeInOutSine'
+        });
+    </script>
+</body>
+</html>
