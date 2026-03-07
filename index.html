@@ -1,301 +1,356 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ibra Wafri Maulana | Developer Portfolio</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Ibra Wafri Maulana – Beginner Developer passionate about Web Development, Cyber Security, and Programming." />
+  <title>Ibra Wafri Maulana | Portfolio</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 <body>
-    <!-- Particles Background -->
-    <div class="particles" id="particles"></div>
 
-    <!-- Music Player -->
-    <div class="music-player" id="musicPlayer">
-        <div class="music-toggle" id="musicToggle">
-            <i class="fas fa-music"></i>
-        </div>
-        <div class="music-controls">
-            <div class="now-playing">
-                <span class="music-icon">🎵</span>
-                <span class="track-name">Lo-Fi Coding</span>
-            </div>
-            <div class="control-buttons">
-                <button id="prevBtn"><i class="fas fa-step-backward"></i></button>
-                <button id="playBtn"><i class="fas fa-play"></i></button>
-                <button id="nextBtn"><i class="fas fa-step-forward"></i></button>
-            </div>
-            <div class="volume-control">
-                <i class="fas fa-volume-up"></i>
-                <input type="range" id="volumeSlider" min="0" max="100" value="50">
-            </div>
-        </div>
+  <!-- ══════════════════════════════════════ LOADING SCREEN ══════════════════════════════════════ -->
+  <div id="loading-screen" aria-hidden="true">
+    <div class="loader-content">
+      <div class="loader-logo">
+        <span class="loader-bracket">[</span>
+        <span class="loader-initial">IWM</span>
+        <span class="loader-bracket">]</span>
+      </div>
+      <div class="loader-bar-wrapper">
+        <div class="loader-bar" id="loader-bar"></div>
+      </div>
+      <p class="loader-text" id="loader-text">INITIALIZING SYSTEM...</p>
     </div>
+  </div>
 
-    <!-- Navigation -->
-    <nav>
-        <div class="logo">Ibra<span>.</span></div>
-        <ul class="nav-links">
-            <li><a href="#home" class="active">Home</a></li>
-            <li><a href="#skills">Skills</a></li>
-            <li><a href="#projects">Projects</a></li>
-            <li><a href="#contact">Contact</a></li>
-        </ul>
-        <a href="#contact" class="lets-talk">Let's Talk</a>
-    </nav>
+  <!-- ══════════════════════════════════════ CUSTOM CURSOR ══════════════════════════════════════ -->
+  <div id="cursor-dot" aria-hidden="true"></div>
+  <div id="cursor-ring" aria-hidden="true"></div>
 
-    <!-- Hero Section -->
-    <section class="hero" id="home">
-        <div class="hero-content">
-            <h1>I'm <span class="highlight">Ibra Wafri</span></h1>
-            <div class="typing-text" id="typing"></div>
-            <p>
-                Young passionate developer age 14 with expertise in Roblox scripting, 
-                Discord bot development, cybersecurity, and web development. 
-                I love turning complex problems into simple, elegant solutions 
-                and creating awesome gaming experiences.
-            </p>
-            <div class="stats">
-                <div class="stat-item">
-                    <span class="stat-number" data-target="3">0</span>
-                    <span class="stat-label">Years Coding</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number" data-target="50">0</span>
-                    <span class="stat-label">Scripts Made</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number" data-target="15">0</span>
-                    <span class="stat-label">Bots Created</span>
-                </div>
-            </div>
+  <!-- ══════════════════════════════════════ PARTICLE CANVAS ══════════════════════════════════════ -->
+  <canvas id="particle-canvas" aria-hidden="true"></canvas>
+
+  <!-- ══════════════════════════════════════ NAVBAR ══════════════════════════════════════ -->
+  <nav id="navbar" role="navigation" aria-label="Main Navigation">
+    <div class="nav-logo">
+      <span class="bracket">[</span>IWM<span class="bracket">]</span>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Toggle Menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links" id="nav-links" role="menubar">
+      <li><a href="#hero" role="menuitem">Home</a></li>
+      <li><a href="#about" role="menuitem">About</a></li>
+      <li><a href="#skills" role="menuitem">Skills</a></li>
+      <li><a href="#projects" role="menuitem">Projects</a></li>
+      <li><a href="#social" role="menuitem">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- ══════════════════════════════════════ HERO SECTION ══════════════════════════════════════ -->
+  <section id="hero" aria-label="Hero Section">
+    <div class="hero-container">
+      <div class="hero-text reveal-left">
+        <p class="hero-greeting">Hello, World! 👾</p>
+        <h1 class="hero-name">
+          Ibra Wafri<br /><span class="gradient-text">Maulana</span>
+        </h1>
+        <div class="hero-typing-wrapper">
+          <span class="typing-prefix">&gt;&nbsp;</span>
+          <span id="typed-text" class="typed-text"></span>
+          <span class="cursor-blink">|</span>
         </div>
-        <div class="hero-image">
-            <div class="image-container tilt-card">
-                <img src="https://cdn.discordapp.com/attachments/1467503460726341663/1479287434935275873/IMG_20260128_133840_864.jpg?ex=69ab7d48&is=69aa2bc8&hm=3785a16664b55133ac29d9121a487a9112e94c8b93e4e34e75fa21bc94697adc" 
-                     alt="Ibra Wafri" class="profile-img">
-                <div class="floating-card clean-code">
-                    <i class="fas fa-code"></i>
-                    <span>Clean Code</span>
-                </div>
-                <div class="floating-card responsive">
-                    <i class="fas fa-mobile-alt"></i>
-                    <span>Responsive</span>
-                </div>
-                <div class="floating-card fast">
-                    <i class="fas fa-bolt"></i>
-                    <span>Fast Loading</span>
-                </div>
-            </div>
+        <div class="hero-meta">
+          <span class="meta-tag"><i class="fa-solid fa-cake-candles"></i> 15 years old</span>
+          <span class="meta-tag"><i class="fa-solid fa-location-dot"></i> Jember, East Java, Indonesia</span>
         </div>
-    </section>
-
-    <!-- Skills Section -->
-    <section class="skills" id="skills">
-        <h2 class="section-title scroll-reveal">My Skills</h2>
-        <div class="skills-grid">
-            <!-- Lua/LuaU -->
-            <div class="skill-card tilt-card scroll-reveal" data-tilt>
-                <div class="skill-icon">
-                    <i class="fas fa-gamepad"></i>
-                </div>
-                <h3>Lua / LuaU</h3>
-                <p>Specialized in Roblox game scripting. Creating powerful scripts for popular games like Blox Fruits, Fisch, Garden Horizon, and Tsunami Brainrot.</p>
-                <div class="skill-tags">
-                    <span class="tag">Roblox</span>
-                    <span class="tag">Game Scripts</span>
-                    <span class="tag">Exploits</span>
-                    <span class="tag">Auto Farm</span>
-                </div>
-            </div>
-
-            <!-- Node.js -->
-            <div class="skill-card tilt-card scroll-reveal" data-tilt>
-                <div class="skill-icon">
-                    <i class="fab fa-node-js"></i>
-                </div>
-                <h3>Node.js</h3>
-                <p>Building powerful automation bots and management systems. Discord bots with advanced features, WhatsApp automation, and control panels.</p>
-                <div class="skill-tags">
-                    <span class="tag">Discord Bot</span>
-                    <span class="tag">WhatsApp Bot</span>
-                    <span class="tag">Panel Bot</span>
-                    <span class="tag">Automation</span>
-                </div>
-            </div>
-
-            <!-- Python -->
-            <div class="skill-card tilt-card scroll-reveal" data-tilt>
-                <div class="skill-icon">
-                    <i class="fab fa-python"></i>
-                </div>
-                <h3>Python</h3>
-                <p>Cybersecurity tools and penetration testing scripts. Also experienced in creating feature-rich Discord bots with database integration.</p>
-                <div class="skill-tags">
-                    <span class="tag">Cyber Security</span>
-                    <span class="tag">Penetration Testing</span>
-                    <span class="tag">Discord Bot</span>
-                    <span class="tag">Automation</span>
-                </div>
-            </div>
-
-            <!-- HTML/CSS -->
-            <div class="skill-card tilt-card scroll-reveal" data-tilt>
-                <div class="skill-icon">
-                    <i class="fab fa-html5"></i>
-                </div>
-                <h3>HTML & CSS</h3>
-                <p>Creating modern, responsive web interfaces. Specialized in dashboard designs, login systems, and signup pages with sleek UI/UX.</p>
-                <div class="skill-tags">
-                    <span class="tag">Dashboard</span>
-                    <span class="tag">Login UI</span>
-                    <span class="tag">Responsive</span>
-                    <span class="tag">Modern Design</span>
-                </div>
-            </div>
-
-            <!-- JavaScript -->
-            <div class="skill-card tilt-card scroll-reveal" data-tilt>
-                <div class="skill-icon">
-                    <i class="fab fa-js"></i>
-                </div>
-                <h3>JavaScript</h3>
-                <p>Adding interactivity and unique features to websites. Dynamic content, animations, API integrations, and modern web functionalities.</p>
-                <div class="skill-tags">
-                    <span class="tag">Interactive UI</span>
-                    <span class="tag">API Integration</span>
-                    <span class="tag">Animations</span>
-                    <span class="tag">Dynamic Content</span>
-                </div>
-            </div>
+        <div class="hero-cta">
+          <a href="#projects" class="btn btn-primary" id="view-projects-btn">View Projects</a>
+          <a href="#social" class="btn btn-ghost" id="contact-btn">Contact Me</a>
         </div>
-    </section>
-
-    <!-- Projects Section -->
-    <section class="projects" id="projects">
-        <h2 class="section-title scroll-reveal">Featured Projects</h2>
-        <div class="projects-grid">
-            <!-- Roblox Scripts -->
-            <div class="project-card tilt-card scroll-reveal" data-tilt>
-                <div class="project-header">
-                    <h3><i class="fas fa-robot"></i> Roblox Script Hub</h3>
-                </div>
-                <div class="project-body">
-                    <p>Advanced scripting hub for multiple Roblox games with auto-features, ESP, teleport, and automated farming systems.</p>
-                    <ul class="project-features">
-                        <li>Blox Fruits Auto Farm & Raid</li>
-                        <li>Fisch Auto Catch & Teleport</li>
-                        <li>Garden Horizon Automation</li>
-                        <li>Tsunami Brainrot Features</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Discord Bot -->
-            <div class="project-card tilt-card scroll-reveal" data-tilt>
-                <div class="project-header">
-                    <h3><i class="fab fa-discord"></i> Advanced Discord Bot</h3>
-                </div>
-                <div class="project-body">
-                    <p>Multi-purpose Discord bot with moderation, music, economy system, and custom commands using Node.js and Python.</p>
-                    <ul class="project-features">
-                        <li>Advanced Moderation System</li>
-                        <li>Music Player with Filters</li>
-                        <li>Economy & Leveling System</li>
-                        <li>Custom Dashboard Integration</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Cyber Security -->
-            <div class="project-card tilt-card scroll-reveal" data-tilt>
-                <div class="project-header">
-                    <h3><i class="fas fa-shield-alt"></i> Security Tools</h3>
-                </div>
-                <div class="project-body">
-                    <p>Python-based cybersecurity tools for penetration testing, network scanning, and vulnerability assessment.</p>
-                    <ul class="project-features">
-                        <li>Port Scanner</li>
-                        <li>Network Analyzer</li>
-                        <li>Password Strength Checker</li>
-                        <li>Basic Encryption Tools</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Web Dashboard -->
-            <div class="project-card tilt-card scroll-reveal" data-tilt>
-                <div class="project-header">
-                    <h3><i class="fas fa-tachometer-alt"></i> Bot Dashboard</h3>
-                </div>
-                <div class="project-body">
-                    <p>Modern web dashboard for managing Discord bots with real-time statistics, command configuration, and user management.</p>
-                    <ul class="project-features">
-                        <li>Real-time Statistics</li>
-                        <li>Command Configuration</li>
-                        <li>User Management System</li>
-                        <li>Responsive Dark Theme UI</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- WhatsApp Bot -->
-            <div class="project-card tilt-card scroll-reveal" data-tilt>
-                <div class="project-header">
-                    <h3><i class="fab fa-whatsapp"></i> WhatsApp Automation</h3>
-                </div>
-                <div class="project-body">
-                    <p>WhatsApp bot built with Node.js for automated responses, group management, and business automation features.</p>
-                    <ul class="project-features">
-                        <li>Auto Reply System</li>
-                        <li>Group Management</li>
-                        <li>Media Downloader</li>
-                        <li>Sticker Creator</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Login System -->
-            <div class="project-card tilt-card scroll-reveal" data-tilt>
-                <div class="project-header">
-                    <h3><i class="fas fa-lock"></i> Auth System UI</h3>
-                </div>
-                <div class="project-body">
-                    <p>Beautiful authentication system with login, register, and password recovery pages featuring modern animations.</p>
-                    <ul class="project-features">
-                        <li>Modern Login Page</li>
-                        <li>Sign Up with Validation</li>
-                        <li>Password Recovery</li>
-                        <li>Smooth Animations</li>
-                    </ul>
-                </div>
-            </div>
+      </div>
+      <div class="hero-avatar reveal-right">
+        <div class="avatar-frame">
+          <div class="avatar-ring ring-1"></div>
+          <div class="avatar-ring ring-2"></div>
+          <div class="avatar-ring ring-3"></div>
+          <div class="avatar-glow"></div>
+          <img src="assets/profile.png" alt="Ibra Wafri Maulana – Profile Photo" class="avatar-img" id="profile-img" />
+          <div class="avatar-scan"></div>
         </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section class="contact" id="contact">
-        <div class="contact-content scroll-reveal">
-            <h2>Let's Work Together</h2>
-            <p>Have a project in mind? Looking for a script, bot, or website? Let's create something awesome together!</p>
-            <a href="mailto:ibra.wafri@example.com" class="lets-talk" style="padding: 15px 40px; font-size: 1.1rem;">
-                <i class="fas fa-envelope"></i> Contact Me
-            </a>
-            <div class="social-links">
-                <a href="#" title="GitHub"><i class="fab fa-github"></i></a>
-                <a href="#" title="Discord"><i class="fab fa-discord"></i></a>
-                <a href="#" title="YouTube"><i class="fab fa-youtube"></i></a>
-                <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
-            </div>
+        <div class="avatar-badge">
+          <span class="status-dot"></span> Available
         </div>
-    </section>
+      </div>
+    </div>
+    <a href="#about" class="scroll-indicator" aria-label="Scroll to About Section">
+      <div class="scroll-arrow"></div>
+    </a>
+  </section>
 
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2026 <span>Ibra Wafri Maulana</span>. All rights reserved.</p>
-    </footer>
+  <!-- ══════════════════════════════════════ ABOUT SECTION ══════════════════════════════════════ -->
+  <section id="about" aria-label="About Me Section">
+    <div class="section-header reveal-up">
+      <span class="section-tag">// 01</span>
+      <h2 class="section-title">About <span class="gradient-text">Me</span></h2>
+      <div class="title-line"></div>
+    </div>
+    <div class="about-grid">
+      <div class="about-card glass reveal-left">
+        <div class="about-icon"><i class="fa-solid fa-user-astronaut"></i></div>
+        <h3>Who Am I?</h3>
+        <p>
+          I'm <strong>Ibra Wafri Maulana</strong>, a 15-year-old self-taught developer from Jember, East Java, Indonesia. I'm passionate about building things on the web and exploring the depths of cybersecurity.
+        </p>
+      </div>
+      <div class="about-card glass reveal-up">
+        <div class="about-icon"><i class="fa-solid fa-code"></i></div>
+        <h3>What I Do?</h3>
+        <p>
+          I build websites, experiment with programming languages, and dive into cybersecurity concepts. Every day is a new opportunity to learn something new and push my skills further.
+        </p>
+      </div>
+      <div class="about-card glass reveal-right">
+        <div class="about-icon"><i class="fa-solid fa-rocket"></i></div>
+        <h3>My Goal?</h3>
+        <p>
+          To become a full-stack developer and ethical hacker. I dream of contributing to open-source projects and building tools that help people stay secure and productive online.
+        </p>
+      </div>
+    </div>
+  </section>
 
-    <script src="script.js"></script>
+  <!-- ══════════════════════════════════════ SKILLS SECTION ══════════════════════════════════════ -->
+  <section id="skills" aria-label="Skills Section">
+    <div class="section-header reveal-up">
+      <span class="section-tag">// 02</span>
+      <h2 class="section-title">My <span class="gradient-text">Skills</span></h2>
+      <div class="title-line"></div>
+    </div>
+    <div class="skills-grid">
+
+      <div class="skill-card glass reveal-up" data-level="70" style="--accent:#3776ab">
+        <div class="skill-icon-wrap"><i class="fa-brands fa-python"></i></div>
+        <span class="skill-name">Python</span>
+        <div class="skill-bar-track"><div class="skill-bar-fill"></div></div>
+        <span class="skill-percent">70%</span>
+      </div>
+
+      <div class="skill-card glass reveal-up" data-level="55" style="--accent:#68a063">
+        <div class="skill-icon-wrap"><i class="fa-brands fa-node-js"></i></div>
+        <span class="skill-name">Node.js</span>
+        <div class="skill-bar-track"><div class="skill-bar-fill"></div></div>
+        <span class="skill-percent">55%</span>
+      </div>
+
+      <div class="skill-card glass reveal-up" data-level="80" style="--accent:#e44d26">
+        <div class="skill-icon-wrap"><i class="fa-brands fa-html5"></i></div>
+        <span class="skill-name">HTML</span>
+        <div class="skill-bar-track"><div class="skill-bar-fill"></div></div>
+        <span class="skill-percent">80%</span>
+      </div>
+
+      <div class="skill-card glass reveal-up" data-level="75" style="--accent:#1572b6">
+        <div class="skill-icon-wrap"><i class="fa-brands fa-css3-alt"></i></div>
+        <span class="skill-name">CSS</span>
+        <div class="skill-bar-track"><div class="skill-bar-fill"></div></div>
+        <span class="skill-percent">75%</span>
+      </div>
+
+      <div class="skill-card glass reveal-up" data-level="65" style="--accent:#f7df1e">
+        <div class="skill-icon-wrap"><i class="fa-brands fa-js"></i></div>
+        <span class="skill-name">JavaScript</span>
+        <div class="skill-bar-track"><div class="skill-bar-fill"></div></div>
+        <span class="skill-percent">65%</span>
+      </div>
+
+      <div class="skill-card glass reveal-up" data-level="45" style="--accent:#00599c">
+        <div class="skill-icon-wrap"><i class="fa-solid fa-c"></i></div>
+        <span class="skill-name">C++</span>
+        <div class="skill-bar-track"><div class="skill-bar-fill"></div></div>
+        <span class="skill-percent">45%</span>
+      </div>
+
+      <div class="skill-card glass reveal-up" data-level="50" style="--accent:#8993be">
+        <div class="skill-icon-wrap"><i class="fa-brands fa-php"></i></div>
+        <span class="skill-name">PHP</span>
+        <div class="skill-bar-track"><div class="skill-bar-fill"></div></div>
+        <span class="skill-percent">50%</span>
+      </div>
+
+      <div class="skill-card glass reveal-up" data-level="60" style="--accent:#00c8ff">
+        <div class="skill-icon-wrap"><i class="fa-solid fa-shield-halved"></i></div>
+        <span class="skill-name">Cyber Security</span>
+        <div class="skill-bar-track"><div class="skill-bar-fill"></div></div>
+        <span class="skill-percent">60%</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════ PROJECTS SECTION ══════════════════════════════════════ -->
+  <section id="projects" aria-label="Projects Section">
+    <div class="section-header reveal-up">
+      <span class="section-tag">// 03</span>
+      <h2 class="section-title">My <span class="gradient-text">Projects</span></h2>
+      <div class="title-line"></div>
+    </div>
+    <div class="projects-grid">
+
+      <article class="project-card glass reveal-up">
+        <div class="project-img-wrap">
+          <div class="project-placeholder" style="--proj-color:#00c8ff">
+            <i class="fa-solid fa-globe"></i>
+          </div>
+          <div class="project-overlay">
+            <a href="#" class="project-link" aria-label="View Project 1"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+            <a href="#" class="project-link" aria-label="GitHub Project 1"><i class="fa-brands fa-github"></i></a>
+          </div>
+        </div>
+        <div class="project-info">
+          <h3 class="project-title">WebApp Project</h3>
+          <p class="project-desc">A modern full-stack web application built with Node.js and vanilla JS. Features real-time updates and a sleek UI.</p>
+          <div class="project-tags">
+            <span class="tag">HTML</span>
+            <span class="tag">CSS</span>
+            <span class="tag">Node.js</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="project-card glass reveal-up">
+        <div class="project-img-wrap">
+          <div class="project-placeholder" style="--proj-color:#a855f7">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <div class="project-overlay">
+            <a href="#" class="project-link" aria-label="View Project 2"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+            <a href="#" class="project-link" aria-label="GitHub Project 2"><i class="fa-brands fa-github"></i></a>
+          </div>
+        </div>
+        <div class="project-info">
+          <h3 class="project-title">Security Tool</h3>
+          <p class="project-desc">A Python-based cybersecurity utility for network scanning and vulnerability assessment.</p>
+          <div class="project-tags">
+            <span class="tag">Python</span>
+            <span class="tag">Security</span>
+            <span class="tag">CLI</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="project-card glass reveal-up">
+        <div class="project-img-wrap">
+          <div class="project-placeholder" style="--proj-color:#f59e0b">
+            <i class="fa-solid fa-robot"></i>
+          </div>
+          <div class="project-overlay">
+            <a href="#" class="project-link" aria-label="View Project 3"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+            <a href="#" class="project-link" aria-label="GitHub Project 3"><i class="fa-brands fa-github"></i></a>
+          </div>
+        </div>
+        <div class="project-info">
+          <h3 class="project-title">Discord Bot</h3>
+          <p class="project-desc">A feature-rich Discord bot with moderation, fun commands, and music streaming built with Node.js.</p>
+          <div class="project-tags">
+            <span class="tag">JavaScript</span>
+            <span class="tag">Discord.js</span>
+            <span class="tag">API</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="project-card glass reveal-up">
+        <div class="project-img-wrap">
+          <div class="project-placeholder" style="--proj-color:#10b981">
+            <i class="fa-solid fa-terminal"></i>
+          </div>
+          <div class="project-overlay">
+            <a href="#" class="project-link" aria-label="View Project 4"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+            <a href="#" class="project-link" aria-label="GitHub Project 4"><i class="fa-brands fa-github"></i></a>
+          </div>
+        </div>
+        <div class="project-info">
+          <h3 class="project-title">CLI Automation</h3>
+          <p class="project-desc">A command-line automation script that simplifies repetitive development tasks and file management.</p>
+          <div class="project-tags">
+            <span class="tag">Python</span>
+            <span class="tag">Automation</span>
+            <span class="tag">Bash</span>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════ SOCIAL SECTION ══════════════════════════════════════ -->
+  <section id="social" aria-label="Social Links Section">
+    <div class="section-header reveal-up">
+      <span class="section-tag">// 04</span>
+      <h2 class="section-title">Find Me <span class="gradient-text">Online</span></h2>
+      <div class="title-line"></div>
+    </div>
+    <p class="social-subtitle reveal-up">Feel free to reach out or follow my journey across the digital world.</p>
+    <div class="social-grid reveal-up">
+
+      <a href="#" class="social-btn discord" id="discord-btn" aria-label="Discord Profile">
+        <div class="social-btn-inner">
+          <i class="fa-brands fa-discord"></i>
+          <span class="social-label">Discord</span>
+          <span class="social-handle">@ibrawafri</span>
+        </div>
+        <div class="social-glow"></div>
+      </a>
+
+      <a href="#" class="social-btn github" id="github-btn" aria-label="GitHub Profile">
+        <div class="social-btn-inner">
+          <i class="fa-brands fa-github"></i>
+          <span class="social-label">GitHub</span>
+          <span class="social-handle">@ibrawafri</span>
+        </div>
+        <div class="social-glow"></div>
+      </a>
+
+      <a href="#" class="social-btn instagram" id="instagram-btn" aria-label="Instagram Profile">
+        <div class="social-btn-inner">
+          <i class="fa-brands fa-instagram"></i>
+          <span class="social-label">Instagram</span>
+          <span class="social-handle">@ibrawafri</span>
+        </div>
+        <div class="social-glow"></div>
+      </a>
+
+      <a href="#" class="social-btn tiktok" id="tiktok-btn" aria-label="TikTok Profile">
+        <div class="social-btn-inner">
+          <i class="fa-brands fa-tiktok"></i>
+          <span class="social-label">TikTok</span>
+          <span class="social-handle">@ibrawafri</span>
+        </div>
+        <div class="social-glow"></div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════ FOOTER ══════════════════════════════════════ -->
+  <footer id="footer">
+    <div class="footer-inner">
+      <div class="footer-logo">
+        <span class="bracket">[</span>IWM<span class="bracket">]</span>
+      </div>
+      <p class="footer-copy">&copy; 2026 <strong>Ibra Wafri Maulana</strong>. All rights reserved.</p>
+      <p class="footer-made">Made with <span class="heart">♥</span> and lots of <span class="coffee">☕</span></p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>
