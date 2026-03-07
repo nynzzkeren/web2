@@ -1,438 +1,397 @@
-// ==========================================
-// TYPING EFFECT
-// ==========================================
-const texts = [
-    "Roblox Scripter",
-    "Discord Bot Developer", 
-    "Cyber Security Enthusiast",
-    "Full Stack Developer"
-];
-let textIndex = 0;
-let charIndex = 0;
-let isDeleting = false;
-const typingElement = document.getElementById('typing');
+/* ══════════════════════════════════════════════════════════════════
+   IBRA WAFRI MAULANA – PORTFOLIO SCRIPT
+   Particles · Typing · Loading · Scroll Reveal · Custom Cursor
+════════════════════════════════════════════════════════════════════ */
 
-function type() {
-    const currentText = texts[textIndex];
-    
-    if (isDeleting) {
-        typingElement.textContent = currentText.substring(0, charIndex - 1);
-        charIndex--;
+'use strict';
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   1. LOADING SCREEN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+(function initLoader() {
+  const screen    = document.getElementById('loading-screen');
+  const bar       = document.getElementById('loader-bar');
+  const loaderTxt = document.getElementById('loader-text');
+
+  const steps = [
+    { pct: 20, txt: 'LOADING ASSETS...' },
+    { pct: 45, txt: 'COMPILING MODULES...' },
+    { pct: 70, txt: 'ESTABLISHING CONNECTION...' },
+    { pct: 90, txt: 'FINALIZING...' },
+    { pct: 100, txt: 'SYSTEM READY ▶' },
+  ];
+
+  let i = 0;
+  const advance = () => {
+    if (i >= steps.length) {
+      setTimeout(() => {
+        screen.classList.add('hidden');
+        document.body.classList.add('loaded');
+        // Kick off post-load features
+        startTyping();
+        initScrollReveal();
+        animateSkillBars();
+      }, 400);
+      return;
+    }
+    const step = steps[i++];
+    bar.style.width      = step.pct + '%';
+    loaderTxt.textContent = step.txt;
+    setTimeout(advance, 380 + Math.random() * 200);
+  };
+
+  advance();
+})();
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   2. CUSTOM CURSOR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+(function initCursor() {
+  const dot  = document.getElementById('cursor-dot');
+  const ring = document.getElementById('cursor-ring');
+
+  let mx = 0, my = 0;
+  let rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX;
+    my = e.clientY;
+    dot.style.left = mx + 'px';
+    dot.style.top  = my + 'px';
+  });
+
+  // Smooth ring follow
+  const followRing = () => {
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.left = rx + 'px';
+    ring.style.top  = ry + 'px';
+    requestAnimationFrame(followRing);
+  };
+  followRing();
+
+  // Hover detection
+  const hoverTargets = document.querySelectorAll('a, button, .skill-card, .project-card, .social-btn, .about-card');
+  hoverTargets.forEach(el => {
+    el.addEventListener('mouseenter', () => ring.classList.add('hovering'));
+    el.addEventListener('mouseleave', () => ring.classList.remove('hovering'));
+  });
+})();
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   3. PARTICLE BACKGROUND
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+(function initParticles() {
+  const canvas = document.getElementById('particle-canvas');
+  const ctx    = canvas.getContext('2d');
+
+  let W, H, particles = [];
+  const COUNT = 90;
+
+  const resize = () => {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  };
+  resize();
+  window.addEventListener('resize', resize);
+
+  const colors = ['rgba(0,200,255,', 'rgba(168,85,247,', 'rgba(236,72,153,'];
+
+  class Particle {
+    constructor() { this.reset(true); }
+    reset(init = false) {
+      this.x  = Math.random() * W;
+      this.y  = init ? Math.random() * H : H + 10;
+      this.r  = Math.random() * 1.5 + 0.3;
+      this.vx = (Math.random() - 0.5) * 0.3;
+      this.vy = -(Math.random() * 0.4 + 0.15);
+      this.life = 0;
+      this.maxLife = Math.random() * 200 + 100;
+      this.color = colors[Math.floor(Math.random() * colors.length)];
+    }
+    update() {
+      this.x += this.vx;
+      this.y += this.vy;
+      this.life++;
+      if (this.life > this.maxLife || this.y < -10) this.reset();
+    }
+    draw() {
+      const alpha = Math.sin((this.life / this.maxLife) * Math.PI) * 0.7;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+      ctx.fillStyle = this.color + alpha + ')';
+      ctx.fill();
+    }
+  }
+
+  for (let i = 0; i < COUNT; i++) particles.push(new Particle());
+
+  // Draw faint connecting lines
+  const drawLines = () => {
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx   = particles[i].x - particles[j].x;
+        const dy   = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 110) {
+          const alpha = (1 - dist / 110) * 0.12;
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(0,200,255,${alpha})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+  };
+
+  const animate = () => {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => { p.update(); p.draw(); });
+    drawLines();
+    requestAnimationFrame(animate);
+  };
+  animate();
+})();
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   4. TYPING EFFECT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+function startTyping() {
+  const el = document.getElementById('typed-text');
+  if (!el) return;
+
+  const phrases = [
+    'Beginner Developer 💻',
+    'Web Development Enthusiast 🌐',
+    'Cyber Security Explorer 🔐',
+    'Python Programmer 🐍',
+    'Always Learning... 🚀',
+  ];
+
+  let pIdx = 0, cIdx = 0, deleting = false;
+
+  const type = () => {
+    const current = phrases[pIdx];
+
+    if (deleting) {
+      el.textContent = current.substring(0, cIdx - 1);
+      cIdx--;
+      if (cIdx === 0) {
+        deleting = false;
+        pIdx = (pIdx + 1) % phrases.length;
+        setTimeout(type, 500);
+        return;
+      }
+      setTimeout(type, 45);
     } else {
-        typingElement.textContent = currentText.substring(0, charIndex + 1);
-        charIndex++;
+      el.textContent = current.substring(0, cIdx + 1);
+      cIdx++;
+      if (cIdx === current.length) {
+        deleting = true;
+        setTimeout(type, 2200);
+        return;
+      }
+      setTimeout(type, 80 + Math.random() * 40);
     }
+  };
 
-    let typeSpeed = isDeleting ? 50 : 100;
-
-    if (!isDeleting && charIndex === currentText.length) {
-        typeSpeed = 2000;
-        isDeleting = true;
-    } else if (isDeleting && charIndex === 0) {
-        isDeleting = false;
-        textIndex = (textIndex + 1) % texts.length;
-        typeSpeed = 500;
-    }
-
-    setTimeout(type, typeSpeed);
+  type();
 }
 
-// Start typing animation
-type();
 
-// ==========================================
-// PARTICLE EFFECT
-// ==========================================
-function createParticles() {
-    const container = document.getElementById('particles');
-    const particleCount = 50;
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   5. SCROLL REVEAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+function initScrollReveal() {
+  const elements = document.querySelectorAll('.reveal-up, .reveal-left, .reveal-right');
 
-    for (let i = 0; i < particleCount; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        particle.style.left = Math.random() * 100 + '%';
-        particle.style.animationDuration = (Math.random() * 20 + 10) + 's';
-        particle.style.animationDelay = Math.random() * 20 + 's';
-        container.appendChild(particle);
-    }
-}
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        // Stagger children within grids
+        const parent = entry.target.parentElement;
+        const siblings = parent ? [...parent.querySelectorAll('.reveal-up, .reveal-left, .reveal-right')] : [];
+        const idx = siblings.indexOf(entry.target);
+        const delay = idx >= 0 ? idx * 90 : 0;
 
-createParticles();
-
-// ==========================================
-// COUNTER ANIMATION
-// ==========================================
-function animateCounters() {
-    const counters = document.querySelectorAll('.stat-number');
-    
-    counters.forEach(counter => {
-        const target = +counter.getAttribute('data-target');
-        const increment = target / 100;
-        let current = 0;
-
-        const updateCounter = () => {
-            if (current < target) {
-                current += increment;
-                counter.textContent = Math.ceil(current) + '+';
-                setTimeout(updateCounter, 20);
-            } else {
-                counter.textContent = target + '+';
-            }
-        };
-
-        updateCounter();
-    });
-}
-
-// ==========================================
-// 3D TILT EFFECT
-// ==========================================
-class TiltEffect {
-    constructor(element, settings = {}) {
-        this.element = element;
-        this.settings = {
-            max: settings.max || 15,
-            perspective: settings.perspective || 1000,
-            scale: settings.scale || 1.02,
-            speed: settings.speed || 400,
-            glare: settings.glare !== false,
-            ...settings
-        };
-        
-        this.init();
-    }
-
-    init() {
-        // Add glare element if enabled
-        if (this.settings.glare) {
-            this.glareElement = document.createElement('div');
-            this.glareElement.className = 'tilt-glare';
-            this.element.appendChild(this.glareElement);
-        }
-
-        // Bind events
-        this.element.addEventListener('mousemove', (e) => this.handleMouseMove(e));
-        this.element.addEventListener('mouseleave', () => this.handleMouseLeave());
-        this.element.addEventListener('mouseenter', () => this.handleMouseEnter());
-    }
-
-    handleMouseMove(e) {
-        const rect = this.element.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        
-        const centerX = rect.width / 2;
-        const centerY = rect.height / 2;
-        
-        const rotateX = ((y - centerY) / centerY) * -this.settings.max;
-        const rotateY = ((x - centerX) / centerX) * this.settings.max;
-
-        this.element.style.transform = `
-            perspective(${this.settings.perspective}px)
-            rotateX(${rotateX}deg)
-            rotateY(${rotateY}deg)
-            scale3d(${this.settings.scale}, ${this.settings.scale}, ${this.settings.scale})
-        `;
-
-        // Update glare position
-        if (this.glareElement) {
-            const glareX = (x / rect.width) * 100;
-            const glareY = (y / rect.height) * 100;
-            this.glareElement.style.background = `
-                radial-gradient(
-                    circle at ${glareX}% ${glareY}%, 
-                    rgba(255,255,255,0.15) 0%, 
-                    rgba(255,255,255,0) 60%
-                )
-            `;
-            this.glareElement.style.opacity = '1';
-        }
-    }
-
-    handleMouseLeave() {
-        this.element.style.transform = `
-            perspective(${this.settings.perspective}px)
-            rotateX(0deg)
-            rotateY(0deg)
-            scale3d(1, 1, 1)
-        `;
-        
-        if (this.glareElement) {
-            this.glareElement.style.opacity = '0';
-        }
-    }
-
-    handleMouseEnter() {
-        this.element.style.transition = 'none';
-    }
-}
-
-// Initialize tilt effect on all cards
-document.addEventListener('DOMContentLoaded', () => {
-    const tiltCards = document.querySelectorAll('[data-tilt]');
-    tiltCards.forEach(card => {
-        new TiltEffect(card, {
-            max: 10,
-            perspective: 1000,
-            scale: 1.02,
-            glare: true
-        });
-    });
-
-    // Also add tilt to image container
-    const imageContainer = document.querySelector('.image-container');
-    if (imageContainer) {
-        new TiltEffect(imageContainer, {
-            max: 5,
-            perspective: 1000,
-            scale: 1.01,
-            glare: true
-        });
-    }
-});
-
-// ==========================================
-// MUSIC PLAYER
-// ==========================================
-class MusicPlayer {
-    constructor() {
-        this.isPlaying = false;
-        this.currentTrack = 0;
-        this.volume = 0.5;
-        
-        // Simulated playlist (in real use, use actual audio files)
-        this.tracks = [
-            { name: "Lo-Fi Coding", artist: "Chill Beats" },
-            { name: "Cyberpunk Synth", artist: "Neon Wave" },
-            { name: "Deep Focus", artist: "Brainwave" },
-            { name: "Night Drive", artist: "Retro Wave" }
-        ];
-
-        this.init();
-    }
-
-    init() {
-        this.player = document.getElementById('musicPlayer');
-        this.toggle = document.getElementById('musicToggle');
-        this.playBtn = document.getElementById('playBtn');
-        this.prevBtn = document.getElementById('prevBtn');
-        this.nextBtn = document.getElementById('nextBtn');
-        this.volumeSlider = document.getElementById('volumeSlider');
-        this.trackName = document.querySelector('.track-name');
-
-        // Toggle player expansion
-        this.toggle.addEventListener('click', () => {
-            this.player.classList.toggle('expanded');
-        });
-
-        // Play/Pause
-        this.playBtn.addEventListener('click', () => {
-            this.togglePlay();
-        });
-
-        // Previous track
-        this.prevBtn.addEventListener('click', () => {
-            this.prevTrack();
-        });
-
-        // Next track
-        this.nextBtn.addEventListener('click', () => {
-            this.nextTrack();
-        });
-
-        // Volume control
-        this.volumeSlider.addEventListener('input', (e) => {
-            this.volume = e.target.value / 100;
-            this.updateVolume();
-        });
-
-        // Auto-play simulation (optional)
-        // this.play();
-    }
-
-    togglePlay() {
-        this.isPlaying = !this.isPlaying;
-        this.updatePlayButton();
-        
-        if (this.isPlaying) {
-            this.simulatePlay();
-        }
-    }
-
-    updatePlayButton() {
-        const icon = this.playBtn.querySelector('i');
-        if (this.isPlaying) {
-            icon.classList.remove('fa-play');
-            icon.classList.add('fa-pause');
-            this.playBtn.classList.add('playing');
-        } else {
-            icon.classList.remove('fa-pause');
-            icon.classList.add('fa-play');
-            this.playBtn.classList.remove('playing');
-        }
-    }
-
-    prevTrack() {
-        this.currentTrack = (this.currentTrack - 1 + this.tracks.length) % this.tracks.length;
-        this.updateTrackInfo();
-        if (this.isPlaying) {
-            this.simulatePlay();
-        }
-    }
-
-    nextTrack() {
-        this.currentTrack = (this.currentTrack + 1) % this.tracks.length;
-        this.updateTrackInfo();
-        if (this.isPlaying) {
-            this.simulatePlay();
-        }
-    }
-
-    updateTrackInfo() {
-        this.trackName.textContent = this.tracks[this.currentTrack].name;
-        
-        // Animation effect
-        this.trackName.style.animation = 'none';
         setTimeout(() => {
-            this.trackName.style.animation = 'bounce 0.5s ease';
-        }, 10);
-    }
+          entry.target.classList.add('visible');
+        }, delay);
 
-    updateVolume() {
-        // In real implementation, adjust audio volume here
-        console.log('Volume:', this.volume);
-    }
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
 
-    simulatePlay() {
-        // Simulate playing (in real use, control actual Audio object)
-        console.log('Playing:', this.tracks[this.currentTrack].name);
-    }
-
-    play() {
-        this.isPlaying = true;
-        this.updatePlayButton();
-        this.simulatePlay();
-    }
+  elements.forEach(el => observer.observe(el));
 }
 
-// Initialize Music Player
-const musicPlayer = new MusicPlayer();
 
-// ==========================================
-// SCROLL ANIMATION
-// ==========================================
-function handleScroll() {
-    const reveals = document.querySelectorAll('.scroll-reveal');
-    
-    reveals.forEach(element => {
-        const windowHeight = window.innerHeight;
-        const elementTop = element.getBoundingClientRect().top;
-        const elementVisible = 150;
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   6. SKILL BAR ANIMATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+function animateSkillBars() {
+  const cards = document.querySelectorAll('.skill-card');
 
-        if (elementTop < windowHeight - elementVisible) {
-            element.classList.add('active');
-        }
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const card  = entry.target;
+        const fill  = card.querySelector('.skill-bar-fill');
+        const level = card.dataset.level || 0;
+        setTimeout(() => {
+          fill.style.width = level + '%';
+        }, 300);
+        observer.unobserve(card);
+      }
     });
+  }, { threshold: 0.3 });
+
+  cards.forEach(card => observer.observe(card));
 }
 
-// ==========================================
-// ACTIVE NAVIGATION
-// ==========================================
-function setActiveNav() {
-    const sections = document.querySelectorAll('section');
-    const navLinks = document.querySelectorAll('.nav-links a');
 
-    window.addEventListener('scroll', () => {
-        let current = '';
-        sections.forEach(section => {
-            const sectionTop = section.offsetTop;
-            const sectionHeight = section.clientHeight;
-            if (scrollY >= sectionTop - 200) {
-                current = section.getAttribute('id');
-            }
-        });
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   7. NAVBAR SCROLL BEHAVIOUR + ACTIVE LINK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+(function initNavbar() {
+  const navbar  = document.getElementById('navbar');
+  const links   = document.querySelectorAll('.nav-links a');
+  const sections = document.querySelectorAll('section[id]');
 
-        navLinks.forEach(link => {
-            link.classList.remove('active');
-            if (link.getAttribute('href').slice(1) === current) {
-                link.classList.add('active');
-            }
-        });
+  window.addEventListener('scroll', () => {
+    // Shrink navbar on scroll
+    navbar.classList.toggle('scrolled', window.scrollY > 60);
+
+    // Active link highlight
+    let current = '';
+    sections.forEach(sec => {
+      const top = sec.offsetTop - 120;
+      if (window.scrollY >= top) current = sec.id;
     });
-}
-
-// ==========================================
-// INITIALIZATION
-// ==========================================
-window.addEventListener('load', () => {
-    animateCounters();
-    setActiveNav();
-});
-
-window.addEventListener('scroll', handleScroll);
-
-// Smooth scroll for navigation links
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            target.scrollIntoView({ behavior: 'smooth' });
-        }
+    links.forEach(link => {
+      link.classList.toggle('active', link.getAttribute('href') === '#' + current);
     });
-});
+  });
+})();
 
-// Parallax effect for hero image
-window.addEventListener('scroll', () => {
-    const scrolled = window.pageYOffset;
-    const parallax = document.querySelector('.hero-image');
-    if (parallax) {
-        parallax.style.transform = `translateY(${scrolled * 0.5}px)`;
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   8. HAMBURGER MENU
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+(function initHamburger() {
+  const btn   = document.getElementById('hamburger');
+  const menu  = document.getElementById('nav-links');
+
+  btn.addEventListener('click', () => {
+    const open = btn.classList.toggle('open');
+    menu.classList.toggle('open', open);
+    btn.setAttribute('aria-expanded', open);
+  });
+
+  // Close on link click
+  menu.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      btn.classList.remove('open');
+      menu.classList.remove('open');
+      btn.setAttribute('aria-expanded', 'false');
+    });
+  });
+})();
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   9. PARALLAX TILT ON AVATAR
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+(function initAvatarTilt() {
+  const frame = document.querySelector('.avatar-frame');
+  if (!frame) return;
+
+  frame.addEventListener('mousemove', e => {
+    const rect = frame.getBoundingClientRect();
+    const cx   = rect.left + rect.width  / 2;
+    const cy   = rect.top  + rect.height / 2;
+    const dx   = (e.clientX - cx) / (rect.width  / 2);
+    const dy   = (e.clientY - cy) / (rect.height / 2);
+    frame.style.transform = `perspective(600px) rotateY(${dx * 10}deg) rotateX(${-dy * 10}deg)`;
+  });
+
+  frame.addEventListener('mouseleave', () => {
+    frame.style.transform = '';
+    frame.style.transition = 'transform 0.6s ease';
+    setTimeout(() => frame.style.transition = '', 600);
+  });
+})();
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   10. GLITCH TITLE EFFECT (subtle flicker on scroll)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+(function initGlitch() {
+  const name = document.querySelector('.hero-name');
+  if (!name) return;
+
+  let flickerTO;
+  const flicker = () => {
+    name.style.filter = 'hue-rotate(40deg) brightness(1.2)';
+    clearTimeout(flickerTO);
+    flickerTO = setTimeout(() => {
+      name.style.filter = '';
+    }, 80);
+  };
+
+  // Trigger on scroll near hero
+  let lastScroll = 0;
+  window.addEventListener('scroll', () => {
+    const delta = Math.abs(window.scrollY - lastScroll);
+    lastScroll  = window.scrollY;
+    if (delta > 60 && window.scrollY < 600) flicker();
+  });
+})();
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   11. RIPPLE EFFECT ON BUTTONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+(function initRipple() {
+  const buttons = document.querySelectorAll('.btn, .social-btn');
+
+  buttons.forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      const rect   = btn.getBoundingClientRect();
+      const x      = e.clientX - rect.left;
+      const y      = e.clientY - rect.top;
+      const ripple = document.createElement('span');
+
+      ripple.style.cssText = `
+        position: absolute;
+        border-radius: 50%;
+        transform: scale(0);
+        animation: rippleAnim 0.6s linear;
+        background: rgba(255,255,255,0.15);
+        width: 100px; height: 100px;
+        left: ${x - 50}px; top: ${y - 50}px;
+        pointer-events: none;
+      `;
+
+      btn.style.position = 'relative';
+      btn.style.overflow = 'hidden';
+      btn.appendChild(ripple);
+      ripple.addEventListener('animationend', () => ripple.remove());
+    });
+  });
+
+  // Inject ripple keyframe once
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes rippleAnim {
+      to { transform: scale(4); opacity: 0; }
     }
-});
-
-// ==========================================
-// MOUSE FOLLOW EFFECT (Optional Enhancement)
-// ==========================================
-document.addEventListener('mousemove', (e) => {
-    const cursor = document.querySelector('.cursor');
-    if (!cursor) {
-        const newCursor = document.createElement('div');
-        newCursor.className = 'cursor';
-        newCursor.style.cssText = `
-            position: fixed;
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--primary-blue);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9999;
-            transition: transform 0.1s;
-            mix-blend-mode: difference;
-        `;
-        document.body.appendChild(newCursor);
-    }
-    
-    const actualCursor = document.querySelector('.cursor');
-    actualCursor.style.left = e.clientX - 10 + 'px';
-    actualCursor.style.top = e.clientY - 10 + 'px';
-});
-
-// Add hover effect to cursor on interactive elements
-document.querySelectorAll('a, button, .tilt-card').forEach(el => {
-    el.addEventListener('mouseenter', () => {
-        const cursor = document.querySelector('.cursor');
-        if (cursor) {
-            cursor.style.transform = 'scale(2)';
-            cursor.style.background = 'rgba(0, 212, 255, 0.1)';
-        }
-    });
-    
-    el.addEventListener('mouseleave', () => {
-        const cursor = document.querySelector('.cursor');
-        if (cursor) {
-            cursor.style.transform = 'scale(1)';
-            cursor.style.background = 'transparent';
-        }
-    });
-});
+  `;
+  document.head.appendChild(style);
+})();
