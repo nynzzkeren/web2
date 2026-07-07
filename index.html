@@ -1,356 +1,1143 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Ibra Wafri Maulana – Beginner Developer passionate about Web Development, Cyber Security, and Programming." />
-  <title>Ibra Wafri Maulana | Portfolio</title>
-  <link rel="stylesheet" href="style.css" />
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SNBT Tryout - Latihan Ujian Masuk PTN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-card: #161616;
+            --bg-hover: #1e1e1e;
+            --border: #2a2a2a;
+            --border-light: #333333;
+            --text-primary: #e8e8e8;
+            --text-secondary: #888888;
+            --text-muted: #555555;
+            --accent: #e0e0e0;
+            --accent-hover: #ffffff;
+            --correct: #4ade80;
+            --wrong: #f87171;
+            --timer: #fbbf24;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .landing {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .landing h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+        }
+
+        .landing .subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 60px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .difficulty-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            max-width: 600px;
+            width: 100%;
+            margin-bottom: 40px;
+        }
+
+        .diff-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .diff-card:hover {
+            border-color: var(--border-light);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 32px rgba(255,255,255,0.04);
+        }
+
+        .diff-card .diff-label {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .diff-card .diff-count {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .diff-card .diff-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        .diff-card.easy:hover { border-color: #4ade80; }
+        .diff-card.normal:hover { border-color: #fbbf24; }
+        .diff-card.hard:hover { border-color: #f87171; }
+
+        .mode-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 20px;
+        }
+
+        .mode-overlay.active { display: flex; }
+
+        .mode-box {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 480px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .mode-box h2 {
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+        }
+
+        .mode-box .mode-sub {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 32px;
+        }
+
+        .mode-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .mode-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 18px 24px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .mode-btn:hover {
+            border-color: var(--border-light);
+            background: var(--bg-hover);
+        }
+
+        .mode-btn .mode-tag {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .mode-btn.exam .mode-tag { color: var(--timer); }
+
+        .cancel-btn {
+            margin-top: 20px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            cursor: pointer;
+            padding: 8px 16px;
+        }
+
+        .cancel-btn:hover { color: var(--text-secondary); }
+
+        .quiz-container {
+            display: none;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .quiz-container.active { display: block; }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 24px;
+            position: sticky;
+            top: 0;
+            background: var(--bg-primary);
+            z-index: 10;
+        }
+
+        .quiz-header .quiz-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .quiz-header .q-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .quiz-header .timer {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--timer);
+            background: var(--bg-card);
+            padding: 6px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .quiz-header .timer.warning {
+            color: var(--wrong);
+            border-color: var(--wrong);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .quiz-header .exit-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quiz-header .exit-btn:hover {
+            border-color: var(--wrong);
+            color: var(--wrong);
+        }
+
+        .progress-track {
+            height: 3px;
+            background: var(--bg-card);
+            border-radius: 2px;
+            margin-bottom: 32px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent);
+            transition: width 0.4s ease;
+            border-radius: 2px;
+        }
+
+        .question-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+
+        .question-text {
+            font-size: 1.15rem;
+            line-height: 1.8;
+            margin-bottom: 28px;
+            font-weight: 500;
+        }
+
+        .question-text .q-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-right: 8px;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option {
+            background: var(--bg-secondary);
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            padding: 16px 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+
+        .option:hover {
+            border-color: var(--border-light);
+            background: var(--bg-hover);
+        }
+
+        .option.selected {
+            border-color: var(--accent);
+            background: rgba(255,255,255,0.03);
+        }
+
+        .option.correct {
+            border-color: var(--correct);
+            background: rgba(74, 222, 128, 0.05);
+        }
+
+        .option.wrong {
+            border-color: var(--wrong);
+            background: rgba(248, 113, 113, 0.05);
+        }
+
+        .option .opt-letter {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            min-width: 24px;
+            margin-top: 2px;
+        }
+
+        .option.selected .opt-letter { color: var(--accent); }
+        .option.correct .opt-letter { color: var(--correct); }
+        .option.wrong .opt-letter { color: var(--wrong); }
+
+        .option .opt-text {
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .nav-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 32px;
+        }
+
+        .nav-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .nav-btn:hover {
+            border-color: var(--border-light);
+            background: var(--bg-hover);
+        }
+
+        .nav-btn.primary {
+            background: var(--text-primary);
+            color: var(--bg-primary);
+            border-color: var(--text-primary);
+        }
+
+        .nav-btn.primary:hover {
+            background: var(--accent-hover);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .q-navigator {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+        }
+
+        .q-dot {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .q-dot:hover { border-color: var(--border-light); }
+        .q-dot.answered { background: var(--accent); color: var(--bg-primary); border-color: var(--accent); }
+        .q-dot.current { border-color: var(--accent); color: var(--accent); }
+        .q-dot.answered.current { background: var(--accent); color: var(--bg-primary); }
+
+        .results-container {
+            display: none;
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .results-container.active { display: block; }
+
+        .results-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .results-header h2 {
+            font-size: 1.6rem;
+            margin-bottom: 8px;
+        }
+
+        .results-header .results-sub {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .score-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .score-big {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .score-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 24px;
+        }
+
+        .score-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .stat-box {
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            padding: 16px;
+        }
+
+        .stat-box .stat-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .stat-box .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .stat-box.correct .stat-val { color: var(--correct); }
+        .stat-box.wrong .stat-val { color: var(--wrong); }
+        .stat-box.empty .stat-val { color: var(--text-muted); }
+
+        .review-section {
+            margin-top: 32px;
+        }
+
+        .review-section h3 {
+            font-size: 1.1rem;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .review-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 12px;
+        }
+
+        .review-item .review-q {
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+
+        .review-item .review-ans {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .review-item .review-ans span {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+        }
+
+        .review-item .review-ans .ans-correct { color: var(--correct); }
+        .review-item .review-ans .ans-wrong { color: var(--wrong); }
+
+        .action-btns {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
+        .action-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 14px 32px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .action-btn:hover {
+            border-color: var(--border-light);
+            background: var(--bg-hover);
+        }
+
+        .action-btn.primary {
+            background: var(--text-primary);
+            color: var(--bg-primary);
+            border-color: var(--text-primary);
+        }
+
+        .action-btn.primary:hover {
+            background: var(--accent-hover);
+        }
+
+        @media (max-width: 600px) {
+            .landing h1 { font-size: 2rem; }
+            .difficulty-grid { grid-template-columns: 1fr; }
+            .score-stats { grid-template-columns: 1fr; }
+            .quiz-header { flex-wrap: wrap; gap: 10px; }
+            .question-card { padding: 20px; }
+            .score-big { font-size: 3rem; }
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-primary); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--border-light); }
+
+        .fade-in {
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
 <body>
 
-  <!-- ══════════════════════════════════════ LOADING SCREEN ══════════════════════════════════════ -->
-  <div id="loading-screen" aria-hidden="true">
-    <div class="loader-content">
-      <div class="loader-logo">
-        <span class="loader-bracket">[</span>
-        <span class="loader-initial">IWM</span>
-        <span class="loader-bracket">]</span>
-      </div>
-      <div class="loader-bar-wrapper">
-        <div class="loader-bar" id="loader-bar"></div>
-      </div>
-      <p class="loader-text" id="loader-text">INITIALIZING SYSTEM...</p>
+<div class="landing" id="landing">
+    <h1>SNBT Tryout</h1>
+    <p class="subtitle">Latihan Ujian Masuk PTN</p>
+
+    <div class="difficulty-grid">
+        <div class="diff-card easy" onclick="selectDifficulty('easy')">
+            <div class="diff-label">Easy</div>
+            <div class="diff-count">30</div>
+            <div class="diff-desc">soal</div>
+        </div>
+        <div class="diff-card normal" onclick="selectDifficulty('normal')">
+            <div class="diff-label">Normal</div>
+            <div class="diff-count">50</div>
+            <div class="diff-desc">soal</div>
+        </div>
+        <div class="diff-card hard" onclick="selectDifficulty('hard')">
+            <div class="diff-label">Hard</div>
+            <div class="diff-count">100</div>
+            <div class="diff-desc">soal</div>
+        </div>
     </div>
-  </div>
 
-  <!-- ══════════════════════════════════════ CUSTOM CURSOR ══════════════════════════════════════ -->
-  <div id="cursor-dot" aria-hidden="true"></div>
-  <div id="cursor-ring" aria-hidden="true"></div>
+    <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 20px;">
+        Total soal tersedia: 170 soal (acak setiap sesi)
+    </p>
+</div>
 
-  <!-- ══════════════════════════════════════ PARTICLE CANVAS ══════════════════════════════════════ -->
-  <canvas id="particle-canvas" aria-hidden="true"></canvas>
-
-  <!-- ══════════════════════════════════════ NAVBAR ══════════════════════════════════════ -->
-  <nav id="navbar" role="navigation" aria-label="Main Navigation">
-    <div class="nav-logo">
-      <span class="bracket">[</span>IWM<span class="bracket">]</span>
+<div class="mode-overlay" id="modeOverlay">
+    <div class="mode-box fade-in">
+        <h2 id="modeTitle">Pilih Mode</h2>
+        <p class="mode-sub" id="modeSub">Pilih cara pengerjaan soal</p>
+        <div class="mode-options">
+            <button class="mode-btn exam" onclick="startQuiz('exam')">
+                <span>Mode Ujian</span>
+                <span class="mode-tag">Dengan Timer</span>
+            </button>
+            <button class="mode-btn" onclick="startQuiz('practice')">
+                <span>Mode Latihan</span>
+                <span class="mode-tag">Tanpa Batas Waktu</span>
+            </button>
+        </div>
+        <button class="cancel-btn" onclick="closeMode()">Batal</button>
     </div>
-    <button class="hamburger" id="hamburger" aria-label="Toggle Menu" aria-expanded="false">
-      <span></span><span></span><span></span>
-    </button>
-    <ul class="nav-links" id="nav-links" role="menubar">
-      <li><a href="#hero" role="menuitem">Home</a></li>
-      <li><a href="#about" role="menuitem">About</a></li>
-      <li><a href="#skills" role="menuitem">Skills</a></li>
-      <li><a href="#projects" role="menuitem">Projects</a></li>
-      <li><a href="#social" role="menuitem">Contact</a></li>
-    </ul>
-  </nav>
+</div>
 
-  <!-- ══════════════════════════════════════ HERO SECTION ══════════════════════════════════════ -->
-  <section id="hero" aria-label="Hero Section">
-    <div class="hero-container">
-      <div class="hero-text reveal-left">
-        <p class="hero-greeting">Hello, World! 👾</p>
-        <h1 class="hero-name">
-          Ibra Wafri<br /><span class="gradient-text">Maulana</span>
-        </h1>
-        <div class="hero-typing-wrapper">
-          <span class="typing-prefix">&gt;&nbsp;</span>
-          <span id="typed-text" class="typed-text"></span>
-          <span class="cursor-blink">|</span>
+<div class="quiz-container" id="quizContainer">
+    <div class="quiz-header">
+        <div class="quiz-info">
+            <span class="q-number" id="qNumber">1 / 30</span>
+            <span class="timer" id="timer" style="display:none;">00:00</span>
         </div>
-        <div class="hero-meta">
-          <span class="meta-tag"><i class="fa-solid fa-cake-candles"></i> 15 years old</span>
-          <span class="meta-tag"><i class="fa-solid fa-location-dot"></i> Jember, East Java, Indonesia</span>
-        </div>
-        <div class="hero-cta">
-          <a href="#projects" class="btn btn-primary" id="view-projects-btn">View Projects</a>
-          <a href="#social" class="btn btn-ghost" id="contact-btn">Contact Me</a>
-        </div>
-      </div>
-      <div class="hero-avatar reveal-right">
-        <div class="avatar-frame">
-          <div class="avatar-ring ring-1"></div>
-          <div class="avatar-ring ring-2"></div>
-          <div class="avatar-ring ring-3"></div>
-          <div class="avatar-glow"></div>
-          <img src="profile.png" alt="Ibra Wafri Maulana – Profile Photo" class="avatar-img" id="profile-img" />
-          <div class="avatar-scan"></div>
-        </div>
-        <div class="avatar-badge">
-          <span class="status-dot"></span> Available
-        </div>
-      </div>
+        <button class="exit-btn" onclick="confirmExit()">Keluar</button>
     </div>
-    <a href="#about" class="scroll-indicator" aria-label="Scroll to About Section">
-      <div class="scroll-arrow"></div>
-    </a>
-  </section>
 
-  <!-- ══════════════════════════════════════ ABOUT SECTION ══════════════════════════════════════ -->
-  <section id="about" aria-label="About Me Section">
-    <div class="section-header reveal-up">
-      <span class="section-tag">// 01</span>
-      <h2 class="section-title">About <span class="gradient-text">Me</span></h2>
-      <div class="title-line"></div>
+    <div class="progress-track">
+        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
     </div>
-    <div class="about-grid">
-      <div class="about-card glass reveal-left">
-        <div class="about-icon"><i class="fa-solid fa-user-astronaut"></i></div>
-        <h3>Who Am I?</h3>
-        <p>
-          I'm <strong>Ibra Wafri Maulana</strong>, a 15-year-old self-taught developer from Jember, East Java, Indonesia. I'm passionate about building things on the web and exploring the depths of cybersecurity.
-        </p>
-      </div>
-      <div class="about-card glass reveal-up">
-        <div class="about-icon"><i class="fa-solid fa-code"></i></div>
-        <h3>What I Do?</h3>
-        <p>
-          I build websites, experiment with programming languages, and dive into cybersecurity concepts. Every day is a new opportunity to learn something new and push my skills further.
-        </p>
-      </div>
-      <div class="about-card glass reveal-right">
-        <div class="about-icon"><i class="fa-solid fa-rocket"></i></div>
-        <h3>My Goal?</h3>
-        <p>
-          To become a full-stack developer and ethical hacker. I dream of contributing to open-source projects and building tools that help people stay secure and productive online.
-        </p>
-      </div>
+
+    <div class="question-card fade-in" id="questionCard">
+        <div class="question-text" id="questionText"></div>
+        <div class="options-list" id="optionsList"></div>
     </div>
-  </section>
 
-  <!-- ══════════════════════════════════════ SKILLS SECTION ══════════════════════════════════════ -->
-  <section id="skills" aria-label="Skills Section">
-    <div class="section-header reveal-up">
-      <span class="section-tag">// 02</span>
-      <h2 class="section-title">My <span class="gradient-text">Skills</span></h2>
-      <div class="title-line"></div>
+    <div class="nav-bar">
+        <button class="nav-btn" id="prevBtn" onclick="prevQuestion()" disabled>Sebelumnya</button>
+        <button class="nav-btn primary" id="nextBtn" onclick="nextQuestion()">Selanjutnya</button>
     </div>
-    <div class="skills-grid">
 
-      <div class="skill-card glass reveal-up" data-level="70" style="--accent:#3776ab">
-        <div class="skill-icon-wrap"><i class="fa-brands fa-python"></i></div>
-        <span class="skill-name">Python</span>
-        <div class="skill-bar-track"><div class="skill-bar-fill"></div></div>
-        <span class="skill-percent">70%</span>
-      </div>
+    <div class="q-navigator" id="qNavigator"></div>
+</div>
 
-      <div class="skill-card glass reveal-up" data-level="55" style="--accent:#68a063">
-        <div class="skill-icon-wrap"><i class="fa-brands fa-node-js"></i></div>
-        <span class="skill-name">Node.js</span>
-        <div class="skill-bar-track"><div class="skill-bar-fill"></div></div>
-        <span class="skill-percent">55%</span>
-      </div>
-
-      <div class="skill-card glass reveal-up" data-level="80" style="--accent:#e44d26">
-        <div class="skill-icon-wrap"><i class="fa-brands fa-html5"></i></div>
-        <span class="skill-name">HTML</span>
-        <div class="skill-bar-track"><div class="skill-bar-fill"></div></div>
-        <span class="skill-percent">80%</span>
-      </div>
-
-      <div class="skill-card glass reveal-up" data-level="75" style="--accent:#1572b6">
-        <div class="skill-icon-wrap"><i class="fa-brands fa-css3-alt"></i></div>
-        <span class="skill-name">CSS</span>
-        <div class="skill-bar-track"><div class="skill-bar-fill"></div></div>
-        <span class="skill-percent">75%</span>
-      </div>
-
-      <div class="skill-card glass reveal-up" data-level="65" style="--accent:#f7df1e">
-        <div class="skill-icon-wrap"><i class="fa-brands fa-js"></i></div>
-        <span class="skill-name">JavaScript</span>
-        <div class="skill-bar-track"><div class="skill-bar-fill"></div></div>
-        <span class="skill-percent">65%</span>
-      </div>
-
-      <div class="skill-card glass reveal-up" data-level="45" style="--accent:#00599c">
-        <div class="skill-icon-wrap"><i class="fa-solid fa-c"></i></div>
-        <span class="skill-name">C++</span>
-        <div class="skill-bar-track"><div class="skill-bar-fill"></div></div>
-        <span class="skill-percent">45%</span>
-      </div>
-
-      <div class="skill-card glass reveal-up" data-level="50" style="--accent:#8993be">
-        <div class="skill-icon-wrap"><i class="fa-brands fa-php"></i></div>
-        <span class="skill-name">PHP</span>
-        <div class="skill-bar-track"><div class="skill-bar-fill"></div></div>
-        <span class="skill-percent">50%</span>
-      </div>
-
-      <div class="skill-card glass reveal-up" data-level="60" style="--accent:#00c8ff">
-        <div class="skill-icon-wrap"><i class="fa-solid fa-shield-halved"></i></div>
-        <span class="skill-name">Cyber Security</span>
-        <div class="skill-bar-track"><div class="skill-bar-fill"></div></div>
-        <span class="skill-percent">60%</span>
-      </div>
-
+<div class="results-container" id="resultsContainer">
+    <div class="results-header">
+        <h2>Hasil Ujian</h2>
+        <p class="results-sub" id="resultsSub"></p>
     </div>
-  </section>
 
-  <!-- ══════════════════════════════════════ PROJECTS SECTION ══════════════════════════════════════ -->
-  <section id="projects" aria-label="Projects Section">
-    <div class="section-header reveal-up">
-      <span class="section-tag">// 03</span>
-      <h2 class="section-title">My <span class="gradient-text">Projects</span></h2>
-      <div class="title-line"></div>
+    <div class="score-card">
+        <div class="score-big" id="scoreBig">0</div>
+        <div class="score-label">dari <span id="scoreTotal">30</span> soal</div>
+        <div class="score-stats">
+            <div class="stat-box correct">
+                <div class="stat-val" id="statCorrect">0</div>
+                <div class="stat-label">Benar</div>
+            </div>
+            <div class="stat-box wrong">
+                <div class="stat-val" id="statWrong">0</div>
+                <div class="stat-label">Salah</div>
+            </div>
+            <div class="stat-box empty">
+                <div class="stat-val" id="statEmpty">0</div>
+                <div class="stat-label">Kosong</div>
+            </div>
+        </div>
     </div>
-    <div class="projects-grid">
 
-      <article class="project-card glass reveal-up">
-        <div class="project-img-wrap">
-          <div class="project-placeholder" style="--proj-color:#00c8ff">
-            <i class="fa-solid fa-globe"></i>
-          </div>
-          <div class="project-overlay">
-            <a href="#" class="project-link" aria-label="View Project 1"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
-            <a href="#" class="project-link" aria-label="GitHub Project 1"><i class="fa-brands fa-github"></i></a>
-          </div>
-        </div>
-        <div class="project-info">
-          <h3 class="project-title">WebApp Project</h3>
-          <p class="project-desc">A modern full-stack web application built with Node.js and vanilla JS. Features real-time updates and a sleek UI.</p>
-          <div class="project-tags">
-            <span class="tag">HTML</span>
-            <span class="tag">CSS</span>
-            <span class="tag">Node.js</span>
-          </div>
-        </div>
-      </article>
-
-      <article class="project-card glass reveal-up">
-        <div class="project-img-wrap">
-          <div class="project-placeholder" style="--proj-color:#a855f7">
-            <i class="fa-solid fa-shield-halved"></i>
-          </div>
-          <div class="project-overlay">
-            <a href="#" class="project-link" aria-label="View Project 2"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
-            <a href="#" class="project-link" aria-label="GitHub Project 2"><i class="fa-brands fa-github"></i></a>
-          </div>
-        </div>
-        <div class="project-info">
-          <h3 class="project-title">Security Tool</h3>
-          <p class="project-desc">A Python-based cybersecurity utility for network scanning and vulnerability assessment.</p>
-          <div class="project-tags">
-            <span class="tag">Python</span>
-            <span class="tag">Security</span>
-            <span class="tag">CLI</span>
-          </div>
-        </div>
-      </article>
-
-      <article class="project-card glass reveal-up">
-        <div class="project-img-wrap">
-          <div class="project-placeholder" style="--proj-color:#f59e0b">
-            <i class="fa-solid fa-robot"></i>
-          </div>
-          <div class="project-overlay">
-            <a href="#" class="project-link" aria-label="View Project 3"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
-            <a href="#" class="project-link" aria-label="GitHub Project 3"><i class="fa-brands fa-github"></i></a>
-          </div>
-        </div>
-        <div class="project-info">
-          <h3 class="project-title">Discord Bot</h3>
-          <p class="project-desc">A feature-rich Discord bot with moderation, fun commands, and music streaming built with Node.js.</p>
-          <div class="project-tags">
-            <span class="tag">JavaScript</span>
-            <span class="tag">Discord.js</span>
-            <span class="tag">API</span>
-          </div>
-        </div>
-      </article>
-
-      <article class="project-card glass reveal-up">
-        <div class="project-img-wrap">
-          <div class="project-placeholder" style="--proj-color:#10b981">
-            <i class="fa-solid fa-terminal"></i>
-          </div>
-          <div class="project-overlay">
-            <a href="#" class="project-link" aria-label="View Project 4"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
-            <a href="#" class="project-link" aria-label="GitHub Project 4"><i class="fa-brands fa-github"></i></a>
-          </div>
-        </div>
-        <div class="project-info">
-          <h3 class="project-title">CLI Automation</h3>
-          <p class="project-desc">A command-line automation script that simplifies repetitive development tasks and file management.</p>
-          <div class="project-tags">
-            <span class="tag">Python</span>
-            <span class="tag">Automation</span>
-            <span class="tag">Bash</span>
-          </div>
-        </div>
-      </article>
-
+    <div class="review-section" id="reviewSection">
+        <h3>Review Jawaban</h3>
+        <div id="reviewList"></div>
     </div>
-  </section>
 
-  <!-- ══════════════════════════════════════ SOCIAL SECTION ══════════════════════════════════════ -->
-  <section id="social" aria-label="Social Links Section">
-    <div class="section-header reveal-up">
-      <span class="section-tag">// 04</span>
-      <h2 class="section-title">Find Me <span class="gradient-text">Online</span></h2>
-      <div class="title-line"></div>
+    <div class="action-btns">
+        <button class="action-btn" onclick="location.reload()">Ulangi</button>
+        <button class="action-btn primary" onclick="showLanding()">Menu Utama</button>
     </div>
-    <p class="social-subtitle reveal-up">Feel free to reach out or follow my journey across the digital world.</p>
-    <div class="social-grid reveal-up">
+</div>
 
-      <a href="#" class="social-btn discord" id="discord-btn" aria-label="Discord Profile">
-        <div class="social-btn-inner">
-          <i class="fa-brands fa-discord"></i>
-          <span class="social-label">Discord</span>
-          <span class="social-handle">@ibrawafri</span>
-        </div>
-        <div class="social-glow"></div>
-      </a>
+<script>
 
-      <a href="#" class="social-btn github" id="github-btn" aria-label="GitHub Profile">
-        <div class="social-btn-inner">
-          <i class="fa-brands fa-github"></i>
-          <span class="social-label">GitHub</span>
-          <span class="social-handle">@ibrawafri</span>
-        </div>
-        <div class="social-glow"></div>
-      </a>
+// ===== DATA SOAL SNBT (170 soal) =====
+const allQuestions = [
+    // PENALARAN UMUM (1-40)
+    { q: "Jika semua A adalah B, dan beberapa B adalah C, maka...", options: ["Semua A adalah C", "Beberapa A mungkin C", "Tidak ada A yang C", "Semua C adalah A"], answer: 1, category: "Penalaran Umum" },
+    { q: "Diberikan pernyataan: 'Setiap siswa yang rajin pasti lulus.' Jika Budi tidak lulus, maka...", options: ["Budi rajin", "Budi tidak rajin", "Budi mungkin rajin", "Tidak dapat disimpulkan"], answer: 1, category: "Penalaran Umum" },
+    { q: "Seri: 2, 6, 12, 20, 30, ...", options: ["36", "40", "42", "44"], answer: 2, category: "Penalaran Umum" },
+    { q: "Seri: 1, 1, 2, 3, 5, 8, ...", options: ["11", "12", "13", "14"], answer: 2, category: "Penalaran Umum" },
+    { q: "Jika P > Q dan Q > R, maka...", options: ["P < R", "P = R", "P > R", "Tidak ada hubungan"], answer: 2, category: "Penalaran Umum" },
+    { q: "Semua kucing adalah mamalia. Semua mamalia bernafas. Jadi...", options: ["Semua yang bernafas adalah kucing", "Semua kucing bernafas", "Beberapa kucing tidak bernafas", "Tidak ada kucing yang mamalia"], answer: 1, category: "Penalaran Umum" },
+    { q: "Seri huruf: A, C, E, G, ...", options: ["H", "I", "J", "K"], answer: 1, category: "Penalaran Umum" },
+    { q: "Diberikan: Jika hujan, maka jalan basah. Jalan tidak basah. Maka...", options: ["Hujan", "Tidak hujan", "Mungkin hujan", "Tidak dapat disimpulkan"], answer: 1, category: "Penalaran Umum" },
+    { q: "Seri: 3, 6, 11, 18, 27, ...", options: ["36", "38", "40", "42"], answer: 1, category: "Penalaran Umum" },
+    { q: "Jika X adalah Y, dan Y adalah Z, maka...", options: ["X mungkin Z", "X pasti Z", "X bukan Z", "Tidak ada hubungan"], answer: 1, category: "Penalaran Umum" },
+    { q: "Seri: 81, 27, 9, 3, ...", options: ["0", "1", "2", "3"], answer: 1, category: "Penalaran Umum" },
+    { q: "Diberikan: Tidak ada burung yang bisa hidup di air. Bebek bisa hidup di air. Maka...", options: ["Bebek adalah burung", "Bebek bukan burung", "Bebek mungkin burung", "Tidak dapat disimpulkan"], answer: 1, category: "Penalaran Umum" },
+    { q: "Seri: 1, 4, 9, 16, 25, ...", options: ["30", "35", "36", "49"], answer: 2, category: "Penalaran Umum" },
+    { q: "Jika A = B dan B = C, maka A ... C", options: ["<", ">", "=", "≠"], answer: 2, category: "Penalaran Umum" },
+    { q: "Seri: 2, 3, 5, 7, 11, ...", options: ["12", "13", "14", "15"], answer: 1, category: "Penalaran Umum" },
+    { q: "Semua dokter pandai. Siti pandai. Maka...", options: ["Siti dokter", "Siti bukan dokter", "Siti mungkin dokter", "Tidak dapat disimpulkan"], answer: 2, category: "Penalaran Umum" },
+    { q: "Seri: 100, 50, 25, 12.5, ...", options: ["5", "6", "6.25", "7"], answer: 2, category: "Penalaran Umum" },
+    { q: "Jika P maka Q. Jika Q maka R. Jika tidak R, maka...", options: ["P", "Tidak P", "Q", "Tidak dapat disimpulkan"], answer: 1, category: "Penalaran Umum" },
+    { q: "Seri: Z, X, V, T, ...", options: ["R", "S", "Q", "P"], answer: 0, category: "Penalaran Umum" },
+    { q: "Tidak ada bunga berwarna hitam. Mawar berwarna hitam. Maka...", options: ["Mawar adalah bunga", "Mawar bukan bunga", "Mawar mungkin bunga", "Tidak dapat disimpulkan"], answer: 1, category: "Penalaran Umum" },
+    { q: "Seri: 5, 10, 20, 40, ...", options: ["60", "70", "80", "90"], answer: 2, category: "Penalaran Umum" },
+    { q: "Jika semua X adalah Y, dan tidak ada Y yang Z, maka...", options: ["Semua X adalah Z", "Tidak ada X yang Z", "Beberapa X adalah Z", "Tidak dapat disimpulkan"], answer: 1, category: "Penalaran Umum" },
+    { q: "Seri: 1, 3, 6, 10, 15, ...", options: ["18", "20", "21", "24"], answer: 2, category: "Penalaran Umum" },
+    { q: "Diberikan: Jika belajar, maka lulus. Andi tidak belajar. Maka...", options: ["Andi lulus", "Andi tidak lulus", "Andi mungkin lulus", "Tidak dapat disimpulkan"], answer: 2, category: "Penalaran Umum" },
+    { q: "Seri: 64, 32, 16, 8, ...", options: ["2", "4", "6", "8"], answer: 1, category: "Penalaran Umum" },
+    { q: "Semua pesawat terbang menggunakan bahan bakar. Benda A tidak menggunakan bahan bakar. Maka...", options: ["A adalah pesawat", "A bukan pesawat", "A mungkin pesawat", "Tidak dapat disimpulkan"], answer: 1, category: "Penalaran Umum" },
+    { q: "Seri: A, D, G, J, ...", options: ["K", "L", "M", "N"], answer: 2, category: "Penalaran Umum" },
+    { q: "Jika P atau Q, dan tidak P, maka...", options: ["P", "Q", "Tidak P dan tidak Q", "Tidak dapat disimpulkan"], answer: 1, category: "Penalaran Umum" },
+    { q: "Seri: 7, 14, 28, 56, ...", options: ["98", "112", "120", "128"], answer: 1, category: "Penalaran Umum" },
+    { q: "Tidak ada ikan yang bisa terbang. Paus tidak bisa terbang. Maka...", options: ["Paus adalah ikan", "Paus bukan ikan", "Paus mungkin ikan", "Tidak dapat disimpulkan"], answer: 2, category: "Penalaran Umum" },
+    { q: "Seri: 2, 5, 10, 17, 26, ...", options: ["35", "36", "37", "38"], answer: 2, category: "Penalaran Umum" },
+    { q: "Jika A maka B. Jika B maka C. Jika A, maka...", options: ["B saja", "C saja", "B dan C", "Tidak dapat disimpulkan"], answer: 2, category: "Penalaran Umum" },
+    { q: "Seri: 1, 8, 27, 64, ...", options: ["100", "125", "216", "343"], answer: 1, category: "Penalaran Umum" },
+    { q: "Semua mahasiswa pandai matematika. Rina pandai matematika. Maka...", options: ["Rina mahasiswa", "Rina bukan mahasiswa", "Rina mungkin mahasiswa", "Tidak dapat disimpulkan"], answer: 2, category: "Penalaran Umum" },
+    { q: "Seri: 0, 1, 1, 2, 3, 5, 8, ...", options: ["11", "12", "13", "14"], answer: 2, category: "Penalaran Umum" },
+    { q: "Jika hari hujan, maka jalan licin. Jalan tidak licin. Maka...", options: ["Hari hujan", "Hari tidak hujan", "Mungkin hujan", "Tidak dapat disimpulkan"], answer: 1, category: "Penalaran Umum" },
+    { q: "Seri: 20, 17, 14, 11, ...", options: ["7", "8", "9", "10"], answer: 1, category: "Penalaran Umum" },
+    { q: "Tidak ada kuda yang berwarna ungu. Hewan X berwarna ungu. Maka...", options: ["X adalah kuda", "X bukan kuda", "X mungkin kuda", "Tidak dapat disimpulkan"], answer: 1, category: "Penalaran Umum" },
+    { q: "Seri: 1, 2, 4, 8, 16, ...", options: ["24", "30", "32", "36"], answer: 2, category: "Penalaran Umum" },
+    { q: "Jika P maka Q. Jika R maka S. P dan R benar. Maka...", options: ["Q dan S", "Q saja", "S saja", "Tidak dapat disimpulkan"], answer: 0, category: "Penalaran Umum" },
+    { q: "Seri: 3, 8, 15, 24, 35, ...", options: ["44", "46", "48", "50"], answer: 2, category: "Penalaran Umum" },
 
-      <a href="#" class="social-btn instagram" id="instagram-btn" aria-label="Instagram Profile">
-        <div class="social-btn-inner">
-          <i class="fa-brands fa-instagram"></i>
-          <span class="social-label">Instagram</span>
-          <span class="social-handle">@ibrawafri</span>
-        </div>
-        <div class="social-glow"></div>
-      </a>
+    // PENGETAHUAN DAN PEMAHAMAN UMUM (41-70)
+    { q: "Siapa penulis novel 'Laskar Pelangi'?", options: ["Andrea Hirata", "Tere Liye", "Dewi Lestari", "Ahmad Tohari"], answer: 0, category: "PPU" },
+    { q: "Ibukota negara Jepang adalah...", options: ["Osaka", "Kyoto", "Tokyo", "Nagoya"], answer: 2, category: "PPU" },
+    { q: "Planet terbesar di tata surya adalah...", options: ["Bumi", "Mars", "Yupiter", "Saturnus"], answer: 2, category: "PPU" },
+    { q: "Rumus kimia air adalah...", options: ["CO2", "H2O", "NaCl", "O2"], answer: 1, category: "PPU" },
+    { q: "Siapa presiden pertama Republik Indonesia?", options: ["Soeharto", "Mohammad Hatta", "Soekarno", "Sutan Sjahrir"], answer: 2, category: "PPU" },
+    { q: "Gunung tertinggi di Indonesia adalah...", options: ["Gunung Semeru", "Gunung Kerinci", "Gunung Rinjani", "Puncak Jaya"], answer: 3, category: "PPU" },
+    { q: "Lambang kimia untuk emas adalah...", options: ["Ag", "Au", "Fe", "Cu"], answer: 1, category: "PPU" },
+    { q: "Negara dengan populasi terbesar di dunia adalah...", options: ["India", "China", "Amerika Serikat", "Indonesia"], answer: 1, category: "PPU" },
+    { q: "Siapa penemu bola lampu?", options: ["Nikola Tesla", "Thomas Edison", "Alexander Graham Bell", "Benjamin Franklin"], answer: 1, category: "PPU" },
+    { q: "Laut terdalam di dunia adalah...", options: ["Laut Mediterania", "Laut Karibia", "Laut Filipina", "Samudra Pasifik"], answer: 3, category: "PPU" },
+    { q: "Benua terbesar di dunia adalah...", options: ["Afrika", "Asia", "Eropa", "Amerika"], answer: 1, category: "PPU" },
+    { q: "Siapa yang mengajarkan teori relativitas?", options: ["Isaac Newton", "Albert Einstein", "Stephen Hawking", "Galileo Galilei"], answer: 1, category: "PPU" },
+    { q: "Sungai terpanjang di dunia adalah...", options: ["Sungai Amazon", "Sungai Nil", "Sungai Mississippi", "Sungai Yangtze"], answer: 1, category: "PPU" },
+    { q: "Negara mana yang dikenal sebagai Negeri Matahari Terbit?", options: ["Korea Selatan", "Thailand", "Jepang", "China"], answer: 2, category: "PPU" },
+    { q: "Organ tubuh manusia yang berfungsi menyaring darah adalah...", options: ["Jantung", "Hati", "Ginjal", "Paru-paru"], answer: 2, category: "PPU" },
+    { q: "Siapa penulis 'Harry Potter'?", options: ["J.R.R. Tolkien", "J.K. Rowling", "George R.R. Martin", "Suzanne Collins"], answer: 1, category: "PPU" },
+    { q: "Mata uang negara Inggris adalah...", options: ["Euro", "Dollar", "Pound Sterling", "Yen"], answer: 2, category: "PPU" },
+    { q: "Berapa jumlah provinsi di Indonesia saat ini?", options: ["32", "34", "36", "38"], answer: 3, category: "PPU" },
+    { q: "Siapa penemu telepon?", options: ["Thomas Edison", "Nikola Tesla", "Alexander Graham Bell", "Guglielmo Marconi"], answer: 2, category: "PPU" },
+    { q: "Hewan tercepat di darat adalah...", options: ["Singa", "Cheetah", "Kuda", "Harimau"], answer: 1, category: "PPU" },
+    { q: "Samudra terluas di dunia adalah...", options: ["Samudra Atlantik", "Samudra Hindia", "Samudra Pasifik", "Samudra Arktik"], answer: 2, category: "PPU" },
+    { q: "Siapa yang menemukan penisilin?", options: ["Louis Pasteur", "Alexander Fleming", "Robert Koch", "Joseph Lister"], answer: 1, category: "PPU" },
+    { q: "Negara mana yang terkenal dengan menara Eiffel?", options: ["Italia", "Jerman", "Prancis", "Spanyol"], answer: 2, category: "PPU" },
+    { q: "Berapa jumlah tulang pada tubuh manusia dewasa?", options: ["196", "206", "216", "226"], answer: 1, category: "PPU" },
+    { q: "Siapa pelukis terkenal karya 'Mona Lisa'?", options: ["Michelangelo", "Raphael", "Leonardo da Vinci", "Donatello"], answer: 2, category: "PPU" },
+    { q: "Apa nama ibu kota Australia?", options: ["Sydney", "Melbourne", "Canberra", "Brisbane"], answer: 2, category: "PPU" },
+    { q: "Unsur kimia dengan simbol 'Fe' adalah...", options: ["Tembaga", "Perak", "Besi", "Emas"], answer: 2, category: "PPU" },
+    { q: "Siapa yang pertama kali mengelilingi dunia?", options: ["Christopher Columbus", "Vasco da Gama", "Ferdinand Magellan", "Marco Polo"], answer: 2, category: "PPU" },
+    { q: "Berapa jumlah warna pada pelangi?", options: ["5", "6", "7", "8"], answer: 2, category: "PPU" },
+    { q: "Negara mana yang memiliki piramida Giza?", options: ["Mesir", "Yunani", "Turki", "Iran"], answer: 0, category: "PPU" },
 
-      <a href="#" class="social-btn tiktok" id="tiktok-btn" aria-label="TikTok Profile">
-        <div class="social-btn-inner">
-          <i class="fa-brands fa-tiktok"></i>
-          <span class="social-label">TikTok</span>
-          <span class="social-handle">@ibrawafri</span>
-        </div>
-        <div class="social-glow"></div>
-      </a>
+    // PEMAHAMAN BACAAN DAN MENULIS (71-100)
+    { q: "Bacalah paragraf berikut: 'Pendidikan adalah kunci utama kemajuan bangsa. Tanpa pendidikan yang berkualitas, sulit bagi suatu negara untuk bersaing di era globalisasi.' Pernyataan yang sesuai dengan paragraf di atas adalah...", options: ["Globalisasi tidak memerlukan pendidikan", "Pendidikan penting untuk kemajuan bangsa", "Negara maju tidak memerlukan pendidikan", "Era globalisasi tidak memerlukan persaingan"], answer: 1, category: "PBM" },
+    { q: "Bacalah: 'Teknologi informasi telah mengubah cara manusia berkomunikasi. Media sosial memungkinkan interaksi tanpa batas jarak dan waktu.' Gagasan utama paragraf tersebut adalah...", options: ["Media sosial berbahaya", "Teknologi mengubah komunikasi", "Manusia tidak perlu berkomunikasi", "Jarak dan waktu tidak penting"], answer: 1, category: "PBM" },
+    { q: "Bacalah: 'Hutan hujan tropis merupakan paru-paru dunia. Namun, laju deforestasi yang tinggi mengancam keberadaannya.' Kalimat tesis paragraf tersebut adalah...", options: ["Hutan hujan tropis indah", "Deforestasi mengancam hutan hujan", "Paru-paru dunia sangat penting", "Tropis memiliki banyak hutan"], answer: 1, category: "PBM" },
+    { q: "Bacalah: 'Budaya lokal perlu dilestarikan agar identitas bangsa tetap terjaga. Di tengah arus globalisasi, budaya tradisional sering terpinggirkan.' Kesimpulan yang tepat adalah...", options: ["Globalisasi harus dihentikan", "Budaya lokal perlu dilestarikan", "Tradisi tidak penting", "Identitas bangsa tidak perlu dijaga"], answer: 1, category: "PBM" },
+    { q: "Bacalah: 'Kesehatan mental sama pentingnya dengan kesehatan fisik. Seseorang yang sehat secara fisik belum tentu sehat secara mental.' Pernyataan yang sesuai adalah...", options: ["Kesehatan fisik lebih penting", "Kesehatan mental tidak penting", "Keduanya sama penting", "Hanya kesehatan fisik yang diperlukan"], answer: 2, category: "PBM" },
+    { q: "Bacalah: 'Energi terbarukan seperti tenaga surya dan angin menjadi alternatif yang ramah lingkungan. Penggunaannya terus meningkat di seluruh dunia.' Topik utama paragraf adalah...", options: ["Polusi lingkungan", "Energi terbarukan", "Tenaga surya", "Angin"], answer: 1, category: "PBM" },
+    { q: "Bacalah: 'Pengangguran merupakan masalah sosial yang kompleks. Penyebabnya bermacam-macam mulai dari keterbatasan lapangan kerja hingga ketidaksesuaian keterampilan.' Informasi tambahan yang relevan adalah...", options: ["Pengangguran tidak perlu diatasi", "Penyebab penganggungan beragam", "Lapangan kerja melimpah", "Keterampilan tidak penting"], answer: 1, category: "PBM" },
+    { q: "Bacalah: 'Gizi seimbang penting untuk pertumbuhan dan perkembangan anak. Kekurangan gizi dapat menyebabkan gangguan pertumbuhan.' Tujuan penulis menulis paragraf tersebut adalah...", options: ["Mengkritik anak", "Menjelaskan pentingnya gizi", "Menganjurkan diet", "Menolak makanan"], answer: 1, category: "PBM" },
+    { q: "Bacalah: 'Perubahan iklim telah menjadi ancaman serius bagi kehidupan di bumi. Pemanasan global menyebabkan naiknya permukaan air laut.' Hubungan kausal dalam paragraf tersebut adalah...", options: ["Air laut menyebabkan perubahan iklim", "Pemanasan global menyebabkan naiknya air laut", "Kehidupan di bumi tidak penting", "Perubahan iklim tidak berbahaya"], answer: 1, category: "PBM" },
+    { q: "Bacalah: 'Keterampilan berpikir kritis sangat dibutuhkan di abad ke-21. Kemampuan menganalisis informasi dan membuat keputusan rasional menjadi kunci sukses.' Kalimat yang menyatakan opini adalah...", options: ["Keterampilan berpikir kritis dibutuhkan", "Abad ke-21 dimulai tahun 2001", "Informasi dapat dianalisis", "Keputusan dapat dibuat"], answer: 0, category: "PBM" },
+    { q: "Bacalah: 'Literasi digital menjadi kebutuhan mendasar di era informasi. Kemampuan memilah informasi valid dari hoaks sangat penting.' Implikasi dari paragraf tersebut adalah...", options: ["Hoaks tidak berbahaya", "Literasi digital tidak penting", "Orang perlu memilah informasi", "Era informasi sudah berakhir"], answer: 2, category: "PBM" },
+    { q: "Bacalah: 'Kearifan lokal mengandung nilai-nilai yang relevan untuk menjaga kelestarian lingkungan. Masyarakat adat telah membuktikan hal ini selama ratusan tahun.' Argumen penulis adalah...", options: ["Kearifan lokal tidak berguna", "Masyarakat adat tidak tahu apa-apa", "Kearifan lokal bermanfaat untuk lingkungan", "Lingkungan tidak perlu dilestarikan"], answer: 2, category: "PBM" },
+    { q: "Bacalah: 'Olahraga teratur memberikan banyak manfaat bagi kesehatan fisik dan mental. Minimal 30 menit olahraga setiap hari sangat dianjurkan.' Saran yang terkandung dalam paragraf adalah...", options: ["Olahraga tidak perlu dilakukan", "Olahraga 30 menit per hari", "Olahraga hanya untuk fisik", "Olahraga berbahaya"], answer: 1, category: "PBM" },
+    { q: "Bacalah: 'Ekonomi kreatif merupakan sektor yang berkembang pesat di Indonesia. Subsektor seperti film, musik, dan desain kontribusinya signifikan.' Data yang mendukung pernyataan tersebut adalah...", options: ["Ekonomi kreatif tidak berkembang", "Film, musik, dan desain berkontribusi", "Indonesia tidak memiliki ekonomi kreatif", "Sektor ekonomi tidak penting"], answer: 1, category: "PBM" },
+    { q: "Bacalah: 'Keanekaragaman hayati Indonesia sangat tinggi. Namun, banyak spesies yang terancam punah akibat aktivitas manusia.' Kontras yang terdapat dalam paragraf adalah...", options: ["Keanekaragaman tinggi vs terancam punah", "Indonesia vs manusia", "Spesies vs aktivitas", "Hayati vs punah"], answer: 0, category: "PBM" },
+    { q: "Bacalah: 'Pemberdayaan UMKM menjadi fokus pemerintah untuk meningkatkan pertumbuhan ekonomi. UMKM menciptakan lapangan kerja yang luas.' Hubungan antara kedua kalimat adalah...", options: ["Sebab-akibat", "Kontras", "Urutan waktu", "Definisi"], answer: 0, category: "PBM" },
+    { q: "Bacalah: 'Pemanfaatan teknologi dalam pembelajaran dapat meningkatkan efektivitas proses belajar mengajar. Namun, penggunaannya harus proporsional.' Sikap penulis terhadap teknologi dalam pembelajaran adalah...", options: ["Menolak teknologi", "Mendukung dengan catatan", "Tidak peduli", "Menolak pembelajaran"], answer: 1, category: "PBM" },
+    { q: "Bacalah: 'Sampah plastik menjadi masalah lingkungan yang mendesak. Setiap tahun, jutaan ton plastik masuk ke lautan.' Masalah utama yang dibahas adalah...", options: ["Lautan", "Sampah plastik", "Jutaan ton", "Tahun"], answer: 1, category: "PBM" },
+    { q: "Bacalah: 'Kolaborasi antara pemerintah, swasta, dan masyarakat diperlukan untuk mengatasi masalah sosial. Tidak ada satu pihak yang dapat menyelesaikan sendiri.' Pesan moral paragraf tersebut adalah...", options: ["Pemerintah harus bekerja sendiri", "Kolaborasi penting", "Swasta tidak perlu dilibatkan", "Masyarakat tidak berperan"], answer: 1, category: "PBM" },
+    { q: "Bacalah: 'Kesenjangan digital masih menjadi tantangan besar di Indonesia. Akses internet yang belum merata menghambat pemerintahan dan pendidikan.' Solusi yang paling tepat berdasarkan paragraf adalah...", options: ["Menghapus internet", "Memperluas akses internet", "Menghentikan pendidikan", "Menghentikan pemerintahan"], answer: 1, category: "PBM" },
+    { q: "Bacalah: 'Membaca buku secara rutin dapat meningkatkan kosakata dan kemampuan berpikir analitis. Kebiasaan membaca sebaiknya ditanamkan sejak dini.' Kalimat yang menyatakan fakta adalah...", options: ["Membaca buku meningkatkan kosakata", "Kebiasaan membaca baik ditanamkan", "Kosakata penting", "Berfikir analitis baik"], answer: 0, category: "PBM" },
+    { q: "Bacalah: 'Pariwisata berkelanjutan menekankan pada pelestarian lingkungan dan kesejahteraan masyarakat lokal. Pendekatan ini berbeda dengan pariwisata massal.' Perbedaan utama yang disebutkan adalah...", options: ["Pariwisata berkelanjutan vs massal", "Lingkungan vs masyarakat", "Pelestarian vs kesejahteraan", "Pendekatan vs pariwisata"], answer: 0, category: "PBM" },
+    { q: "Bacalah: 'Kedisiplinan merupakan kunci kesuksesan. Orang yang disiplin cenderung lebih konsisten dalam mencapai tujuannya.' Kesimpulan yang dapat diambil adalah...", options: ["Disiplin tidak penting", "Kedisiplinan mendukung kesuksesan", "Konsistensi tidak diperlukan", "Tujuan tidak perlu dicapai"], answer: 1, category: "PBM" },
+    { q: "Bacalah: 'Penggunaan energi fosil masih mendominasi kebutuhan energi dunia. Namun, cadangannya semakin menipis dan berdampak pada lingkungan.' Dampak negatif yang disebutkan adalah...", options: ["Energi fosil melimpah", "Cadangan menipis dan berdampak lingkungan", "Dunia tidak butuh energi", "Lingkungan tidak terpengaruh"], answer: 1, category: "PBM" },
+    { q: "Bacalah: 'Keterbukaan informasi publik merupakan hak warga negara. Transparansi pemerintah dapat mengurangi praktik korupsi.' Tujuan utama keterbukaan informasi adalah...", options: ["Menyembunyikan data", "Mengurangi korupsi", "Membingungkan warga", "Menutup informasi"], answer: 1, category: "PBM" },
+    { q: "Bacalah: 'Keseimbangan antara pekerjaan dan kehidupan pribadi penting untuk kesejahteraan. Burnout sering terjadi akibat ketidakseimbangan tersebut.' Penyebab burnout menurut paragraf adalah...", options: ["Keseimbangan", "Ketidakseimbangan", "Kesejahteraan", "Kehidupan pribadi"], answer: 1, category: "PBM" },
+    { q: "Bacalah: 'Inovasi teknologi medis telah menyelamatkan jutaan nyawa. Deteksi dini penyakit kini lebih akurat berkat kemajuan teknologi.' Manfaat utama yang disebutkan adalah...", options: ["Teknologi mahal", "Penyakit bertambah", "Penyelamatan nyawa dan deteksi dini", "Teknologi berbahaya"], answer: 2, category: "PBM" },
+    { q: "Bacalah: 'Pendidikan karakter perlu dintegrasikan dalam kurikulum. Pembentukan moral generasi muda menjadi tanggung jawab bersama.' Siapa yang bertanggung jawab menurut paragraf?", options: ["Guru saja", "Orang tua saja", "Tanggung jawab bersama", "Pemerintah saja"], answer: 2, category: "PBM" },
+    { q: "Bacalah: 'Pertanian modern mengandalkan teknologi untuk meningkatkan produktivitas. Namun, keberlanjutan tetap harus menjadi prioritas.' Sikap penulis terhadap pertanian modern adalah...", options: ["Menolak teknologi", "Mendukung dengan memperhatikan keberlanjutan", "Tidak peduli produktivitas", "Mengabaikan keberlanjutan"], answer: 1, category: "PBM" },
+    { q: "Bacalah: 'Kota pintar (smart city) memanfaatkan teknologi untuk meningkatkan kualitas hidup warganya. Transportasi, energi, dan pelayanan publik menjadi lebih efisien.' Contoh penerapan smart city yang disebutkan adalah...", options: ["Hanya transportasi", "Hanya energi", "Transportasi, energi, dan pelayanan publik", "Hanya pelayanan publik"], answer: 2, category: "PBM" },
 
-    </div>
-  </section>
+    // PENGETAHUAN KUANTITATIF (101-130)
+    { q: "Jika 3x + 5 = 20, maka nilai x adalah...", options: ["3", "4", "5", "6"], answer: 2, category: "PK" },
+    { q: "Luas persegi dengan sisi 7 cm adalah...", options: ["28 cm²", "42 cm²", "49 cm²", "56 cm²"], answer: 2, category: "PK" },
+    { q: "Persentase dari 25 dari 100 adalah...", options: ["15%", "20%", "25%", "30%"], answer: 2, category: "PK" },
+    { q: "Jika a = 4 dan b = 3, maka nilai a² + b² adalah...", options: ["16", "20", "25", "30"], answer: 2, category: "PK" },
+    { q: "Rata-rata dari 10, 20, 30, 40, 50 adalah...", options: ["25", "28", "30", "32"], answer: 2, category: "PK" },
+    { q: "Keliling lingkaran dengan diameter 14 cm (π = 22/7) adalah...", options: ["22 cm", "33 cm", "44 cm", "55 cm"], answer: 2, category: "PK" },
+    { q: "Jika 2x - 3 = 7, maka x = ...", options: ["3", "4", "5", "6"], answer: 2, category: "PK" },
+    { q: "Faktor dari 36 yang merupakan bilangan prima adalah...", options: ["2 dan 3", "3 dan 4", "4 dan 6", "6 dan 9"], answer: 0, category: "PK" },
+    { q: "Jika harga 5 buku Rp25.000, maka harga 8 buah adalah...", options: ["Rp30.000", "Rp35.000", "Rp40.000", "Rp45.000"], answer: 2, category: "PK" },
+    { q: "Volume kubus dengan rusuk 5 cm adalah...", options: ["100 cm³", "125 cm³", "150 cm³", "200 cm³"], answer: 1, category: "PK" },
+    { q: "Jika x + y = 10 dan x - y = 2, maka xy = ...", options: ["20", "24", "25", "30"], answer: 1, category: "PK" },
+    { q: "Berapa banyak bilangan genap antara 1 sampai 50?", options: ["20", "24", "25", "26"], answer: 2, category: "PK" },
+    { q: "Jika 15% dari suatu bilangan adalah 30, maka bilangan tersebut adalah...", options: ["150", "180", "200", "250"], answer: 2, category: "PK" },
+    { q: "Luas segitiga dengan alas 12 cm dan tinggi 8 cm adalah...", options: ["40 cm²", "48 cm²", "56 cm²", "96 cm²"], answer: 1, category: "PK" },
+    { q: "Jika 3/4 dari sebuah tangki berisi 60 liter, maka kapasitas penuh tangki adalah...", options: ["70 liter", "75 liter", "80 liter", "90 liter"], answer: 2, category: "PK" },
+    { q: "Nilai dari 2³ + 3² adalah...", options: ["15", "16", "17", "18"], answer: 2, category: "PK" },
+    { q: "Sebuah mobil menempuh jarak 240 km dalam 4 jam. Kecepatan rata-ratanya adalah...", options: ["50 km/jam", "55 km/jam", "60 km/jam", "65 km/jam"], answer: 2, category: "PK" },
+    { q: "Jika f(x) = 2x + 1, maka f(5) = ...", options: ["9", "10", "11", "12"], answer: 2, category: "PK" },
+    { q: "FPB dari 24 dan 36 adalah...", options: ["6", "8", "12", "24"], answer: 2, category: "PK" },
+    { q: "Jika suku bunga 10% per tahun, maka bunga dari Rp1.000.000 selama 2 tahun adalah...", options: ["Rp100.000", "Rp150.000", "Rp200.000", "Rp250.000"], answer: 2, category: "PK" },
+    { q: "Berapa banyak diagonal pada segi enam?", options: ["6", "8", "9", "12"], answer: 2, category: "PK" },
+    { q: "Jika x² = 49, maka x = ...", options: ["5 atau -5", "6 atau -6", "7 atau -7", "8 atau -8"], answer: 2, category: "PK" },
+    { q: "Modus dari data: 5, 7, 7, 8, 9, 7, 6 adalah...", options: ["5", "6", "7", "8"], answer: 2, category: "PK" },
+    { q: "Jika 2x + 3y = 12 dan x = 3, maka y = ...", options: ["1", "2", "3", "4"], answer: 1, category: "PK" },
+    { q: "Luas persegi panjang dengan panjang 15 cm dan lebar 8 cm adalah...", options: ["100 cm²", "110 cm²", "120 cm²", "130 cm²"], answer: 2, category: "PK" },
+    { q: "Jika 20% dari x adalah 40, maka x = ...", options: ["100", "150", "200", "250"], answer: 2, category: "PK" },
+    { q: "Median dari data: 3, 5, 7, 9, 11 adalah...", options: ["5", "6", "7", "8"], answer: 2, category: "PK" },
+    { q: "Jika a : b = 2 : 3 dan a + b = 25, maka b = ...", options: ["10", "12", "15", "18"], answer: 2, category: "PK" },
+    { q: "Keliling persegi dengan luas 64 cm² adalah...", options: ["24 cm", "28 cm", "32 cm", "36 cm"], answer: 2, category: "PK" },
+    { q: "Jika 4^x = 64, maka x = ...", options: ["2", "3", "4", "5"], answer: 1, category: "PK" },
 
-  <!-- ══════════════════════════════════════ FOOTER ══════════════════════════════════════ -->
-  <footer id="footer">
-    <div class="footer-inner">
-      <div class="footer-logo">
-        <span class="bracket">[</span>IWM<span class="bracket">]</span>
-      </div>
-      <p class="footer-copy">&copy; 2026 <strong>Ibra Wafri Maulana</strong>. All rights reserved.</p>
-      <p class="footer-made">Made with <span class="heart">♥</span> and lots of <span class="coffee">☕</span></p>
-    </div>
-  </footer>
+    // LITERASI BAHASA INDONESIA (131-150)
+    { q: "Bacalah: 'Masyarakat perlu meningkatkan kesadaran akan pentingnya menjaga kebersihan lingkungan.' Kalimat yang bermakna sama adalah...", options: ["Kebersihan lingkungan tidak penting", "Kesadaran menjaga kebersihan perlu ditingkatkan", "Masyarakat tidak perlu peduli", "Lingkungan sudah bersih"], answer: 1, category: "LBI" },
+    { q: "Kata 'menganalisis' berasal dari kata dasar...", options: ["Analisis", "Analisa", "Analitik", "Analisis"], answer: 0, category: "LBI" },
+    { q: "Kalimat yang menggunakan ejaan yang benar adalah...", options: ["Dia pergi ke pasar kemarin.", "Dia pergi ke Pasar kemarin.", "Dia pergi ke pasar Kemarin.", "dia pergi ke pasar kemarin."], answer: 0, category: "LBI" },
+    { q: "Pilihlah kata yang tepat: 'Pemerintah akan ... program vaksinasi nasional.'", options: ["melaksanakan", "melaksanakan", "melaksanakan", "melaksanakan"], answer: 0, category: "LBI" },
+    { q: "Kalimat yang merupakan opini adalah...", options: ["Jakarta adalah ibukota Indonesia", "Bunga matahari berwarna kuning", "Menurut saya, pendidikan sangat penting", "Air mendidih pada suhu 100°C"], answer: 2, category: "LBI" },
+    { q: "Bacalah: 'Penduduk kota semakin padat setiap tahunnya.' Sinonim dari kata 'padat' dalam konteks tersebut adalah...", options: ["Renggang", "Penuh", "Luas", "Sepi"], answer: 1, category: "LBI" },
+    { q: "Pilihlah kata baku yang benar: ...", options: ["Aktifitas", "Aktivitas", "Aktifitas", "Aktifitas"], answer: 1, category: "LBI" },
+    { q: "Kalimat yang menggunakan tanda baca dengan benar adalah...", options: ["Saya suka membaca, menulis, dan menggambar.", "Saya suka membaca menulis dan menggambar.", "Saya suka, membaca, menulis dan menggambar.", "Saya suka membaca menulis, dan menggambar."], answer: 0, category: "LBI" },
+    { q: "Antonim dari kata 'kompleks' adalah...", options: ["Rumit", "Sederhana", "Sulit", "Banyak"], answer: 1, category: "LBI" },
+    { q: "Pilihlah penulisan yang benar: ...", options: ["di rumah", "dirumah", "di-rumah", "di Rumah"], answer: 0, category: "LBI" },
+    { q: "Bacalah: 'Penelitian ini dilakukan untuk menguji hipotesis yang telah dirumuskan sebelumnya.' Makna kata 'hipotesis' adalah...", options: ["Hasil penelitian", "Dugaan sementara", "Kesimpulan akhir", "Data penelitian"], answer: 1, category: "LBI" },
+    { q: "Kalimat yang menggunakan kata seru dengan tepat adalah...", options: ["Wah, pemandangannya sangat indah!", "Wah pemandangannya sangat indah", "Wah, pemandangannya sangat indah", "Wah pemandangannya sangat indah!"], answer: 0, category: "LBI" },
+    { q: "Pilihlah kata yang tepat untuk melengkapi kalimat: 'Dia sangat ... dalam menyelesaikan tugasnya.'", options: ["tekun", "tekun", "tekun", "tekun"], answer: 0, category: "LBI" },
+    { q: "Bacalah: 'Banyak masyarakat yang belum memahami pentingnya literasi keuangan.' Kata 'literasi' dalam konteks tersebut bermakna...", options: ["Kemampuan membaca", "Kemampuan menulis", "Kemampuan memahami dan menggunakan informasi", "Kemampuan berhitung"], answer: 2, category: "LBI" },
+    { q: "Kalimat yang merupakan kalimat pasif adalah...", options: ["Saya membaca buku", "Buku dibaca oleh saya", "Saya sedang membaca", "Buku itu menarik"], answer: 1, category: "LBI" },
+    { q: "Pilihlah penulisan singkatan yang benar: ...", options: ["Sdr.", "Sdr", "Saudara", "sdra."], answer: 0, category: "LBI" },
+    { q: "Bacalah: 'Pemerintah berkomitmen untuk mengurangi angka kemiskinan.' Kata 'berkomitmen' memiliki makna yang sama dengan...", options: ["Berjanji", "Bertanya", "Berhenti", "Berubah"], answer: 0, category: "LBI" },
+    { q: "Kalimat yang menggunakan kata depan dengan benar adalah...", options: ["Dia datang dari sekolah", "Dia datang dari sekolah.", "Dia datang, dari sekolah", "Dia datang dari, sekolah"], answer: 1, category: "LBI" },
+    { q: "Pilihlah kata yang tepat: 'Hasil ... menunjukkan adanya peningkatan signifikan.'", options: ["analisis", "analisa", "analis", "analis"], answer: 0, category: "LBI" },
+    { q: "Bacalah: 'Kegiatan gotong royong masih menjadi tradisi di banyak desa.' Makna kata 'gotong royong' adalah...", options: ["Bekerja sendiri", "Bekerja sama", "Bekerja cepat", "Bekerja lambat"], answer: 1, category: "LBI" },
+    { q: "Kalimat yang menggunakan imbuhan dengan benar adalah...", options: ["Pekerjaan", "Pekerjaan", "Pekerjaan", "Pekerjaan"], answer: 0, category: "LBI" },
+    { q: "Pilihlah kata yang tidak baku: ...", options: ["Aktivitas", "Aktifitas", "Aktual", "Aktualisasi"], answer: 1, category: "LBI" },
+    { q: "Bacalah: 'Perubahan iklim memberikan dampak yang signifikan terhadap kehidupan manusia.' Kata 'signifikan' bermakna...", options: ["Kecil", "Besar", "Tidak penting", "Sementara"], answer: 1, category: "LBI" },
+    { q: "Kalimat yang menggunakan kata ulang dengan benar adalah...", options: ["Anak-anak sedang bermain", "Anak anak sedang bermain", "Anak-anak, sedang bermain", "Anak anak, sedang bermain"], answer: 0, category: "LBI" },
+    { q: "Pilihlah kata yang tepat untuk melengkapi: 'Dia ... untuk hadir tepat waktu.'", options: ["berusaha", "berusaha", "berusaha", "berusaha"], answer: 0, category: "LBI" },
+    { q: "Bacalah: 'Pendidikan merupakan investasi jangka panjang bagi bangsa.' Kata 'investasi' dalam konteks tersebut bermakna...", options: ["Pengeluaran", "Penanaman modal", "Pemborosan", "Penghematan"], answer: 1, category: "LBI" },
+    { q: "Kalimat yang merupakan kalimat ajakan adalah...", options: ["Ayo kita belajar bersama!", "Kamu harus belajar", "Saya sedang belajar", "Dia sudah belajar"], answer: 0, category: "LBI" },
 
-  <script src="script.js"></script>
+    // LITERASI BAHASA INGGRIS (151-170)
+    { q: "Choose the correct sentence: 'She ... to the market yesterday.'", options: ["go", "goes", "went", "going"], answer: 2, category: "LBE" },
+    { q: "The opposite of 'increase' is...", options: ["rise", "grow", "decrease", "expand"], answer: 2, category: "LBE" },
+    { q: "Choose the correct word: 'The book is ... the table.'", options: ["in", "on", "at", "under"], answer: 1, category: "LBE" },
+    { q: "'Many students ... English every day.'", options: ["study", "studies", "studying", "studied"], answer: 0, category: "LBE" },
+    { q: "The synonym of 'happy' is...", options: ["sad", "angry", "joyful", "tired"], answer: 2, category: "LBE" },
+    { q: "Choose the correct form: 'If I ... rich, I would buy a house.'", options: ["am", "was", "were", "be"], answer: 2, category: "LBE" },
+    { q: "'The weather is very ... today.'", options: ["hot", "heat", "hotly", "heating"], answer: 0, category: "LBE" },
+    { q: "The word 'beautiful' is a(n)...", options: ["noun", "verb", "adjective", "adverb"], answer: 2, category: "LBE" },
+    { q: "Choose the correct sentence: 'They ... football when it started to rain.'", options: ["play", "played", "were playing", "have played"], answer: 2, category: "LBE" },
+    { q: "'I have lived here ... 2010.'", options: ["for", "since", "from", "during"], answer: 1, category: "LBE" },
+    { q: "The antonym of 'difficult' is...", options: ["hard", "easy", "complex", "tough"], answer: 1, category: "LBE" },
+    { q: "Choose the correct word: 'She is ... than her sister.'", options: ["tall", "taller", "tallest", "more tall"], answer: 1, category: "LBE" },
+    { q: "'The meeting will be held ... Monday.'", options: ["in", "on", "at", "by"], answer: 1, category: "LBE" },
+    { q: "Choose the correct sentence: 'Neither of the boys ... present.'", options: ["are", "is", "were", "have been"], answer: 1, category: "LBE" },
+    { q: "The word 'quickly' is a(n)...", options: ["noun", "verb", "adjective", "adverb"], answer: 3, category: "LBE" },
+    { q: "'She asked me where I ... from.'", options: ["come", "came", "comes", "coming"], answer: 1, category: "LBE" },
+    { q: "Choose the correct form: 'By the time we arrived, the movie ... .'", options: ["starts", "started", "had started", "has started"], answer: 2, category: "LBE" },
+    { q: "'The children are afraid ... the dark.'", options: ["with", "of", "from", "at"], answer: 1, category: "LBE" },
+    { q: "The synonym of 'begin' is...", options: ["end", "finish", "start", "stop"], answer: 2, category: "LBE" },
+    { q: "Choose the correct sentence: 'Not only ... smart, but also kind.'", options: ["she is", "is she", "she was", "was she"], answer: 1, category: "LBE" }
+];
+
+// ===== STATE =====
+let selectedDifficulty = '';
+let selectedMode = '';
+let questions = [];
+let currentQ = 0;
+let answers = [];
+let timerInterval = null;
+let timeLeft = 0;
+let totalTime = 0;
+
+const difficultyConfig = {
+    easy: { count: 30, time: 45 * 60 },    // 45 menit
+    normal: { count: 50, time: 75 * 60 },   // 75 menit
+    hard: { count: 100, time: 120 * 60 }    // 120 menit
+};
+
+// ===== UTILS =====
+function shuffleArray(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+function formatTime(seconds) {
+    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const s = (seconds % 60).toString().padStart(2, '0');
+    return m + ':' + s;
+}
+
+// ===== NAVIGATION =====
+function selectDifficulty(diff) {
+    selectedDifficulty = diff;
+    const config = difficultyConfig[diff];
+    document.getElementById('modeTitle').textContent = 'Mode ' + diff.charAt(0).toUpperCase() + diff.slice(1) + ' (' + config.count + ' Soal)';
+    document.getElementById('modeOverlay').classList.add('active');
+}
+
+function closeMode() {
+    document.getElementById('modeOverlay').classList.remove('active');
+}
+
+function startQuiz(mode) {
+    selectedMode = mode;
+    closeMode();
+
+    const config = difficultyConfig[selectedDifficulty];
+
+    // Acak soal dari 170 soal
+    const shuffled = shuffleArray(allQuestions);
+    questions = shuffled.slice(0, config.count);
+
+    currentQ = 0;
+    answers = new Array(questions.length).fill(-1);
+
+    // Setup timer
+    const timerEl = document.getElementById('timer');
+    if (mode === 'exam') {
+        timeLeft = config.time;
+        totalTime = config.time;
+        timerEl.style.display = 'inline-block';
+        timerEl.textContent = formatTime(timeLeft);
+        timerEl.classList.remove('warning');
+        startTimer();
+    } else {
+        timerEl.style.display = 'none';
+    }
+
+    // Tampilkan quiz
+    document.getElementById('landing').style.display = 'none';
+    document.getElementById('quizContainer').classList.add('active');
+    document.getElementById('resultsContainer').classList.remove('active');
+
+    renderQuestion();
+    renderNavigator();
+}
+
+function startTimer() {
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        const timerEl = document.getElementById('timer');
+        timerEl.textContent = formatTime(timeLeft);
+
+        if (timeLeft <= 300) { // 5 menit tersisa
+            timerEl.classList.add('warning');
+        }
+
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            finishQuiz();
+        }
+    }, 1000);
+}
+
+function showLanding() {
+    if (timerInterval) clearInterval(timerInterval);
+    document.getElementById('landing').style.display = 'flex';
+    document.getElementById('quizContainer').classList.remove('active');
+    document.getElementById('resultsContainer').classList.remove('active');
+}
+
+function confirmExit() {
+    if (confirm('Yakin ingin keluar? Progress akan hilang.')) {
+        if (timerInterval) clearInterval(timerInterval);
+        showLanding();
+    }
+}
+
+// ===== RENDER =====
+function renderQuestion() {
+    const q = questions[currentQ];
+    const letters = ['A', 'B', 'C', 'D'];
+
+    document.getElementById('qNumber').textContent = (currentQ + 1) + ' / ' + questions.length;
+    document.getElementById('progressFill').style.width = ((currentQ + 1) / questions.length * 100) + '%';
+
+    document.getElementById('questionText').innerHTML =
+        '<span class="q-num">[' + q.category + ']</span>' + q.q;
+
+    let optsHtml = '';
+    q.options.forEach((opt, i) => {
+        const cls = answers[currentQ] === i ? 'selected' : '';
+        optsHtml += '<div class="option ' + cls + '" onclick="selectOption(' + i + ')">' +
+            '<span class="opt-letter">' + letters[i] + '</span>' +
+            '<span class="opt-text">' + opt + '</span></div>';
+    });
+    document.getElementById('optionsList').innerHTML = optsHtml;
+
+    // Update nav buttons
+    document.getElementById('prevBtn').disabled = currentQ === 0;
+    document.getElementById('nextBtn').textContent =
+        currentQ === questions.length - 1 ? 'Selesai' : 'Selanjutnya';
+
+    // Update navigator
+    updateNavigator();
+
+    // Re-trigger fade
+    const card = document.getElementById('questionCard');
+    card.classList.remove('fade-in');
+    void card.offsetWidth;
+    card.classList.add('fade-in');
+}
+
+function selectOption(idx) {
+    answers[currentQ] = idx;
+    renderQuestion();
+}
+
+function prevQuestion() {
+    if (currentQ > 0) {
+        currentQ--;
+        renderQuestion();
+    }
+}
+
+function nextQuestion() {
+    if (currentQ < questions.length - 1) {
+        currentQ++;
+        renderQuestion();
+    } else {
+        finishQuiz();
+    }
+}
+
+// ===== NAVIGATOR =====
+function renderNavigator() {
+    let html = '';
+    for (let i = 0; i < questions.length; i++) {
+        html += '<div class="q-dot" id="dot-' + i + '" onclick="goToQuestion(' + i + ')">' + (i + 1) + '</div>';
+    }
+    document.getElementById('qNavigator').innerHTML = html;
+    updateNavigator();
+}
+
+function updateNavigator() {
+    for (let i = 0; i < questions.length; i++) {
+        const dot = document.getElementById('dot-' + i);
+        if (!dot) continue;
+        dot.className = 'q-dot';
+        if (i === currentQ) dot.classList.add('current');
+        if (answers[i] !== -1) dot.classList.add('answered');
+    }
+}
+
+function goToQuestion(idx) {
+    currentQ = idx;
+    renderQuestion();
+}
+
+// ===== RESULTS =====
+function finishQuiz() {
+    if (timerInterval) clearInterval(timerInterval);
+
+    let correct = 0, wrong = 0, empty = 0;
+    questions.forEach((q, i) => {
+        if (answers[i] === -1) empty++;
+        else if (answers[i] === q.answer) correct++;
+        else wrong++;
+    });
+
+    const total = questions.length;
+    const score = correct;
+
+    document.getElementById('quizContainer').classList.remove('active');
+    document.getElementById('resultsContainer').classList.add('active');
+
+    document.getElementById('resultsSub').textContent = 
+        'Mode: ' + (selectedMode === 'exam' ? 'Ujian' : 'Latihan') + 
+        ' | Level: ' + selectedDifficulty.charAt(0).toUpperCase() + selectedDifficulty.slice(1);
+
+    document.getElementById('scoreBig').textContent = score;
+    document.getElementById('scoreTotal').textContent = total;
+    document.getElementById('statCorrect').textContent = correct;
+    document.getElementById('statWrong').textContent = wrong;
+    document.getElementById('statEmpty').textContent = empty;
+
+    // Review
+    let reviewHtml = '';
+    questions.forEach((q, i) => {
+        const letters = ['A', 'B', 'C', 'D'];
+        const userAns = answers[i];
+        const isCorrect = userAns === q.answer;
+        const statusClass = userAns === -1 ? '' : (isCorrect ? 'ans-correct' : 'ans-wrong');
+        const statusText = userAns === -1 ? 'Tidak dijawab' : 
+            (isCorrect ? 'Benar' : 'Salah (Jawabanmu: ' + letters[userAns] + ')');
+
+        reviewHtml += '<div class="review-item">' +
+            '<div class="review-q">' + (i + 1) + '. ' + q.q + '</div>' +
+            '<div class="review-ans">Jawaban benar: <span class="ans-correct">' + letters[q.answer] + '</span> | ' +
+            '<span class="' + statusClass + '">' + statusText + '</span></div></div>';
+    });
+    document.getElementById('reviewList').innerHTML = reviewHtml;
+}
+</script>
 </body>
 </html>
