@@ -390,8 +390,6 @@
             </div>
             <button class="btn" id="btn-next-1" onclick="nextPage(2)" style="display:none;">Lanjut Membaca</button>
             <p id="locked-msg" class="locked-msg">Sabar ya sayang, hadiahnya baru bisa dibuka tanggal 25 Agustus!</p>
-            <br>
-            <button class="btn btn-small" id="btn-test" onclick="unlockTest()">[TEST] Buka Sekarang Paksa</button>
         </div>
     </div>
 
@@ -498,11 +496,8 @@
         // 3. Countdown Logic (Target: 25 Agustus 2026)
         const targetDate = new Date("August 25, 2026 00:00:00").getTime();
         let isBirthday = false;
-        let testMode = false;
 
         function updateCountdown() {
-            if (testMode) return; 
-
             const now = new Date().getTime();
             const distance = targetDate - now;
 
@@ -514,7 +509,6 @@
                 document.getElementById('seconds').innerText = "00";
                 
                 document.getElementById('locked-msg').style.display = 'none';
-                document.getElementById('btn-test').style.display = 'none';
                 document.getElementById('btn-next-1').style.display = 'inline-block';
                 return;
             }
@@ -533,22 +527,9 @@
         setInterval(updateCountdown, 1000);
         updateCountdown();
 
-        // 4. Test Mode Unlock
-        function unlockTest() {
-            testMode = true;
-            document.getElementById('days').innerText = "00";
-            document.getElementById('hours').innerText = "00";
-            document.getElementById('minutes').innerText = "00";
-            document.getElementById('seconds').innerText = "00";
-            
-            document.getElementById('locked-msg').style.display = 'none';
-            document.getElementById('btn-test').style.display = 'none';
-            document.getElementById('btn-next-1').style.display = 'inline-block';
-        }
-
         // Lock validation on Page 1
         document.getElementById('page-1').addEventListener('click', function(e) {
-            if (e.target.id === 'page-1' && !isBirthday && !testMode) {
+            if (e.target.id === 'page-1' && !isBirthday) {
                 const msg = document.getElementById('locked-msg');
                 msg.style.display = 'block';
                 msg.style.animation = 'none';
